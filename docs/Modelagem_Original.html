@@ -1,0 +1,728 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>VigiaSa&uacute;de Recife | Etapa 02/06 | Entrega 2</title><meta name="description" content="Diagrama ER, dicion&aacute;rio de dados, relacionamentos e SQL do VigiaSa&uacute;de Recife"><style>
+:root{--navy:#102D4D;--teal:#087D7A;--red:#A62546;--bg:#F6F4EE;--ink:#172F43;--muted:#5E7180;--border:#DDE7E4}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,Arial,Helvetica,sans-serif;line-height:1.5}
+.skip{position:absolute;left:-9999px;top:0;background:#fff;padding:12px;z-index:10}.skip:focus{left:14px}
+.wrap{width:min(1370px,calc(100% - 36px));margin:22px auto 60px}
+.masthead{background:#FEFCF7;border:1px solid #E5E5DD;border-radius:30px 30px 0 0;position:relative;overflow:hidden;padding:37px 43px 27px}
+.masthead:after{content:'';position:absolute;border:26px solid rgba(8,125,122,.09);width:290px;height:290px;border-radius:50%;right:-97px;top:-197px;pointer-events:none}
+.eyebrow{color:var(--teal);font-size:13px;letter-spacing:.14em;font-weight:850;text-transform:uppercase}
+h1{font-size:clamp(34px,5.4vw,67px);color:var(--navy);letter-spacing:-.058em;line-height:1.04;margin:10px 0 10px;max-width:1040px}h1 span{color:var(--red)}
+.lead{font-size:17px;color:#52657A;max-width:880px;margin:0 0 22px}.meta{display:flex;flex-wrap:wrap;gap:8px}.chip{border-radius:90px;background:#fff;border:1px solid #DEE6E1;padding:8px 13px;font-weight:780;font-size:12px;color:#244359}
+.nav{background:#102D4D;padding:12px 35px;display:flex;gap:10px;flex-wrap:wrap}.nav a{color:#EAF4F0;padding:8px 13px;border-radius:50px;text-decoration:none;font-weight:750;font-size:13px}.nav a:hover,.nav a:focus-visible{background:#235577;outline:none}
+.board{background:#fff;border:1px solid #E2EAE8;border-top:0;padding:26px 31px 32px}
+.section-kicker{color:var(--teal);font-size:12px;text-transform:uppercase;letter-spacing:.12em;font-weight:850}
+h2{font-size:clamp(24px,3.4vw,32px);line-height:1.15;margin:6px 0 13px;color:var(--navy);letter-spacing:-.035em}
+h3{font-size:19px;color:var(--navy);margin:0 0 8px}.section p{color:#3D5162;margin:8px 0;font-size:14.5px}
+.section{margin-top:34px}.section:first-child{margin-top:0}
+.thesis{padding:20px 22px;background:#143C5E;color:white;border-radius:20px;font-size:19px;font-weight:750;line-height:1.5}.thesis em{font-style:normal;color:#A8E2CF}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;margin:18px 0}.stat{border:1px solid #DDE8E5;border-radius:16px;padding:16px;background:#FAFCFB}.stat b{display:block;font-size:26px;color:#0F5F6B}.stat span{font-size:13px;color:#5D6E7D}
+.diagram-head{display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}.hint{font-size:13px;color:#627588}
+.diagram-wrap{border:1px solid #DDE8E9;border-radius:19px;background:#FAFCFC;overflow:auto;padding:16px;max-height:710px;scrollbar-color:#ADC8C1 #F7FAFA}
+.diagram-inner{width:1500px;max-width:none;margin:auto}.diagram-inner svg{width:100%;height:auto;display:block}.zoom-tools{display:flex;gap:8px}
+.btn{appearance:none;border:1px solid #CEDFDE;border-radius:10px;background:#fff;color:#1B5261;cursor:pointer;font:inherit;font-weight:800;font-size:12px;padding:9px 12px}.btn:focus-visible,summary:focus-visible{outline:3px solid #F5B257;outline-offset:2px}.btn:hover{background:#EAF4F0}
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;color:#5A7180;font-size:12px}.legend i{width:10px;height:10px;display:inline-block;border-radius:50%;margin-right:5px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.note{border:1px solid #DDE7E4;background:#FBFCFA;padding:20px;border-radius:17px}.note p{margin:0}.note strong{color:#0D596A}
+.table-scroll{overflow-x:auto;border-radius:14px;border:1px solid #E0E9E7}table{width:100%;border-collapse:collapse;background:#fff;min-width:700px;font-size:13px}th{color:#0D6567;background:#EAF3F0;text-align:left;letter-spacing:.035em;text-transform:uppercase;font-size:11px}th,td{padding:10px 12px;border-bottom:1px solid #E6EDEA;text-align:left;vertical-align:top}tr:last-child td{border-bottom:0}td:first-child{color:#183B58;font-weight:730}code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:#EFF5F4;color:#1A5765;padding:2px 4px;border-radius:4px;font-size:12px}
+.dict-grid{display:grid;grid-template-columns:1fr;gap:10px}.dict-item{border:1px solid #DDE7E4;border-radius:15px;background:#fff;overflow:hidden}.dict-item summary{list-style:none;cursor:pointer;padding:15px 18px;display:flex;align-items:center;justify-content:space-between;gap:14px}.dict-item summary::-webkit-details-marker{display:none}.dict-title{color:var(--navy);font-size:16px;font-weight:850;display:flex;align-items:center;gap:11px}.dict-title i{width:12px;height:12px;border-radius:4px}.dict-meta{font-size:12px;color:#667D88}.chev{display:inline-block;margin-left:12px;transition:transform .2s}.dict-item[open] .chev{transform:rotate(180deg)}.dict-inner{padding:0 16px 17px}.dict-inner p{margin:0 0 13px}.dict-item summary:hover{background:#F3F8F7}
+.list{margin:8px 0;padding-left:20px}.list li{margin:9px 0;line-height:1.5;color:#43586B}
+.pill{display:inline-flex;padding:5px 10px;background:#EDF6F2;color:#0B6B5F;border-radius:9px;font-size:11px;font-weight:850}
+.sql-header{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:9px}
+pre{font-size:11.5px;white-space:pre;overflow:auto;max-height:390px;padding:18px;background:#122E48;color:#E7F5EE;border-radius:14px;line-height:1.52}
+pre code{color:inherit;background:transparent;padding:0;font-size:inherit}
+footer{background:#FBFCFA;border:1px solid #E2EAE8;border-top:0;padding:20px 39px;border-radius:0 0 30px 30px;display:flex;align-items:center;justify-content:space-between;gap:20px;color:#637584;font-size:12px;flex-wrap:wrap}footer strong{color:var(--navy)}
+@media(max-width:740px){.wrap{width:calc(100% - 14px);margin:7px auto 26px}.masthead{padding:27px 22px}.nav{padding:8px 11px}.board{padding:22px 14px}.grid,.stats{grid-template-columns:1fr}.diagram-wrap{padding:5px}.diagram-inner{width:950px}.diagram-head{align-items:flex-start}footer{padding:16px}.thesis{font-size:17px}.dict-item summary{padding:14px}}
+@media print{@page{size:A4 landscape;margin:10mm}body{background:#fff}.wrap{width:100%;margin:0}.masthead,.board,footer{border-radius:0}.nav,.zoom-tools{display:none}.diagram-inner{width:100%!important}.diagram-wrap{overflow:visible;max-height:none}.section{break-inside:avoid}.dict-item{break-inside:avoid}pre{max-height:none}}
+</style></head><body>
+<a class="skip" href="#main">Ir para o conte&uacute;do principal</a><div class="wrap">
+<header class="masthead"><div class="eyebrow">UNICAP / Tecnologias Digitais para Inova&ccedil;&atilde;o Social &middot; Etapa 02/06</div><h1>VigiaSa&uacute;de Recife<span>.</span><br>Modelagem de dados</h1><p class="lead">Entrega 2 &mdash; transforma&ccedil;&atilde;o dos fluxos da arquitetura em um modelo relacional consistente, com chaves, cardinalidades, regras e estrutura SQL inicial.</p><div class="meta"><span class="chip">Kristyson Alpino</span><span class="chip">Pedro Victor Gomes</span><span class="chip">Leandro Lima</span><span class="chip">Proposta acad&ecirc;mica &middot; Vers&atilde;o 1.0</span></div></header>
+<nav class="nav" aria-label="Se&ccedil;&otilde;es"><a href="#modelo">Modelo ER</a><a href="#relacoes">Relacionamentos</a><a href="#dicionario">Dicion&aacute;rio</a><a href="#regras">Regras de neg&oacute;cio</a><a href="#sql">SQL</a></nav>
+<main id="main" class="board">
+<section class="section"><div class="thesis">Uma <em>ocorr&ecirc;ncia</em> &eacute; a entidade central: pessoas e cat&aacute;logos a descrevem; evid&ecirc;ncias, pareceres, interven&ccedil;&otilde;es, participa&ccedil;&atilde;o comunit&aacute;ria e auditoria acompanham seu ciclo de vida.</div><div class="stats"><div class="stat"><b>11</b><span>entidades do modelo de dados</span></div><div class="stat"><b>16</b><span>rela&ccedil;&otilde;es por chave estrangeira</span></div><div class="stat"><b>PostGIS</b><span>ponto geogr&aacute;fico com controle de acesso</span></div></div></section>
+<section class="section" id="modelo"><div class="section-kicker">01 / Diagrama entidade-relacionamento</div><div class="diagram-head"><div><h2>Como as entidades se conectam</h2><p>Vis&atilde;o f&iacute;sica simplificada: mostra campos-chave e FKs centrais. O dicion&aacute;rio abaixo cont&eacute;m todos os atributos.</p></div><div class="zoom-tools" aria-label="Amplia&ccedil;&atilde;o do diagrama"><button class="btn" id="zoom-out" type="button" aria-label="Reduzir zoom">&minus;</button><button class="btn" id="zoom-reset" type="button">Restaurar <span id="zoom-label">100%</span></button><button class="btn" id="zoom-in" type="button" aria-label="Aumentar zoom">+</button></div></div><div class="diagram-wrap" id="erd-graphic" tabindex="0" aria-label="Diagrama com rolagem horizontal, use as teclas de dire&ccedil;&atilde;o para navegar"><div class="diagram-inner" id="erd-inner"><!-- Generated by graphviz version 2.42.4 (0)
+ -->
+<!-- Title: VigiaSaude_ER Pages: 1 -->
+<svg role="img" aria-label="Diagrama entidade relacionamento: Usuarios, Categorias e Bairros ligados a Ocorrencias, que por sua vez se relacionam com evidencias, validacoes, intervencoes, retornos, historico e sugestoes de IA." width="846pt" height="1470pt"
+ viewBox="0.00 0.00 846.32 1470.32" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(20.16 1450.16)">
+<title>VigiaSaude_ER</title>
+<polygon fill="#ffffff" stroke="transparent" points="-20.16,20.16 -20.16,-1450.16 826.16,-1450.16 826.16,20.16 -20.16,20.16"/>
+<!-- usuarios&#45;&gt;ocorrencias -->
+<g id="edge1" class="edge">
+<title>usuarios&#45;&gt;ocorrencias</title>
+<path fill="none" stroke="#9baebb" stroke-width="1.55" d="M188.19,-878.68C223.67,-854.57 264.37,-826.92 300.96,-802.05"/>
+<polygon fill="#9baebb" stroke="#9baebb" stroke-width="1.55" points="302.2,-803.66 305.86,-798.72 299.92,-800.3 302.2,-803.66"/>
+<text text-anchor="middle" x="247" y="-851.2" font-family="Arial" font-size="11.00" fill="#4a6579">autor 0..1</text>
+</g>
+<!-- categorias&#45;&gt;ocorrencias -->
+<g id="edge2" class="edge">
+<title>categorias&#45;&gt;ocorrencias</title>
+<path fill="none" stroke="#9baebb" stroke-width="1.55" d="M155.53,-730C196.48,-730 251.7,-730 299.96,-730"/>
+<polygon fill="#9baebb" stroke="#9baebb" stroke-width="1.55" points="300.01,-732.03 305.81,-730 300.01,-727.97 300.01,-732.03"/>
+<text text-anchor="middle" x="247" y="-733.2" font-family="Arial" font-size="11.00" fill="#4a6579">1:N</text>
+</g>
+<!-- bairros&#45;&gt;ocorrencias -->
+<g id="edge3" class="edge">
+<title>bairros&#45;&gt;ocorrencias</title>
+<path fill="none" stroke="#9baebb" stroke-width="1.55" d="M152.59,-594.64C193.96,-616.65 250.93,-646.96 300.47,-673.32"/>
+<polygon fill="#9baebb" stroke="#9baebb" stroke-width="1.55" points="299.78,-675.25 305.86,-676.19 301.69,-671.67 299.78,-675.25"/>
+<text text-anchor="middle" x="247" y="-659.2" font-family="Arial" font-size="11.00" fill="#4a6579">0..1:N</text>
+</g>
+<!-- ocorrencias&#45;&gt;evidencias -->
+<g id="edge4" class="edge">
+<title>ocorrencias&#45;&gt;evidencias</title>
+<path fill="none" stroke="#9baebb" stroke-width="1.55" d="M437.09,-839.72C467.18,-945.14 521.45,-1106.24 600,-1230 604.56,-1237.18 609.66,-1244.29 615.08,-1251.22"/>
+<polygon fill="#9baebb" stroke="#9baebb" stroke-width="1.55" points="613.68,-1252.72 618.88,-1255.99 616.86,-1250.19 613.68,-1252.72"/>
+<text text-anchor="middle" x="555" y="-1170.2" font-family="Arial" font-size="11.00" fill="#4a6579">1:N</text>
+</g>
+<!-- ocorrencias&#45;&gt;confirmacoes_comunitarias -->
+<g id="edge5" class="edge">
+<title>ocorrencias&#45;&gt;confirmacoes_comunitarias</title>
+<path fill="none" stroke="#9baebb" stroke-width="1.55" d="M464.06,-839.52C498.74,-903.45 546.91,-983.89 600,-1048 602.91,-1051.52 605.97,-1055.02 609.12,-1058.49"/>
+<polygon fill="#9baebb" stroke="#9baebb" stroke-width="1.55" points="608.05,-1060.33 613.48,-1063.21 611.03,-1057.57 608.05,-1060.33"/>
+<text text-anchor="middle" x="555" y="-1002.2" font-family="Arial" font-size="11.00" fill="#4a6579">1:N</text>
+</g>
+<!-- ocorrencias&#45;&gt;validacoes_tecnicas -->
+<g id="edge6" class="edge">
+<title>ocorrencias&#45;&gt;validacoes_tecnicas</title>
+<path fill="none" stroke="#9baebb" stroke-width="1.55" d="M510.24,-803.26C542.12,-826.32 577.16,-851.67 608.47,-874.33"/>
+<polygon fill="#9baebb" stroke="#9baebb" stroke-width="1.55" points="607.57,-876.18 613.46,-877.94 609.95,-872.9 607.57,-876.18"/>
+<text text-anchor="middle" x="555" y="-839.2" font-family="Arial" font-size="11.00" fill="#4a6579">1:N</text>
+</g>
+<!-- ocorrencias&#45;&gt;intervencoes -->
+<g id="edge7" class="edge">
+<title>ocorrencias&#45;&gt;intervencoes</title>
+<path fill="none" stroke="#9baebb" stroke-width="1.55" d="M510.24,-730C541.72,-730 576.3,-730 607.31,-730"/>
+<polygon fill="#9baebb" stroke="#9baebb" stroke-width="1.55" points="607.66,-732.03 613.46,-730 607.66,-727.97 607.66,-732.03"/>
+<text text-anchor="middle" x="555" y="-733.2" font-family="Arial" font-size="11.00" fill="#4a6579">1:N</text>
+</g>
+<!-- ocorrencias&#45;&gt;retornos_comunitarios -->
+<g id="edge8" class="edge">
+<title>ocorrencias&#45;&gt;retornos_comunitarios</title>
+<path fill="none" stroke="#9baebb" stroke-width="1.55" d="M510.24,-656.74C541.33,-634.25 575.44,-609.58 606.15,-587.35"/>
+<polygon fill="#9baebb" stroke="#9baebb" stroke-width="1.55" points="607.54,-588.85 611.05,-583.81 605.16,-585.56 607.54,-588.85"/>
+<text text-anchor="middle" x="555" y="-633.2" font-family="Arial" font-size="11.00" fill="#4a6579">1:N</text>
+</g>
+<!-- ocorrencias&#45;&gt;historico_status -->
+<g id="edge9" class="edge">
+<title>ocorrencias&#45;&gt;historico_status</title>
+<path fill="none" stroke="#9baebb" stroke-width="1.55" d="M466.7,-620.46C501.94,-557.26 549.78,-477.58 600,-412 603.07,-407.99 606.27,-403.97 609.57,-399.96"/>
+<polygon fill="#9baebb" stroke="#9baebb" stroke-width="1.55" points="611.33,-401.02 613.48,-395.27 608.21,-398.42 611.33,-401.02"/>
+<text text-anchor="middle" x="555" y="-490.2" font-family="Arial" font-size="11.00" fill="#4a6579">1:N</text>
+</g>
+<!-- ocorrencias&#45;&gt;sugestoes_ia -->
+<g id="edge10" class="edge">
+<title>ocorrencias&#45;&gt;sugestoes_ia</title>
+<path fill="none" stroke="#9baebb" stroke-width="1.55" d="M434.05,-620.47C462.77,-508.89 516.89,-333.75 600,-200 601.48,-197.62 603.02,-195.24 604.62,-192.88"/>
+<polygon fill="#9baebb" stroke="#9baebb" stroke-width="1.55" points="606.33,-193.98 607.96,-188.06 602.99,-191.67 606.33,-193.98"/>
+<text text-anchor="middle" x="555" y="-298.2" font-family="Arial" font-size="11.00" fill="#4a6579">1:N</text>
+</g>
+<!-- usuarios -->
+<g id="node1" class="node">
+<title>usuarios</title>
+<polygon fill="#ffffff" stroke="transparent" points="0,-848 0,-1036 188,-1036 188,-848 0,-848"/>
+<polygon fill="#134d73" stroke="transparent" points="0,-1003 0,-1036 188,-1036 188,-1003 0,-1003"/>
+<polygon fill="none" stroke="#e2eae9" points="0,-1003 0,-1036 188,-1036 188,-1003 0,-1003"/>
+<text text-anchor="start" x="9" y="-1016.8" font-family="Arial" font-weight="bold" font-size="14.00" fill="#ffffff">Usuarios</text>
+<polygon fill="#ffffff" stroke="transparent" points="0,-972 0,-1003 100,-1003 100,-972 0,-972"/>
+<polygon fill="none" stroke="#e2eae9" points="0,-972 0,-1003 100,-1003 100,-972 0,-972"/>
+<text text-anchor="start" x="9" y="-984.4" font-family="Arial" font-size="12.00" fill="#172f43">id</text>
+<polygon fill="#ffffff" stroke="transparent" points="100,-972 100,-1003 188,-1003 188,-972 100,-972"/>
+<polygon fill="none" stroke="#e2eae9" points="100,-972 100,-1003 188,-1003 188,-972 100,-972"/>
+<text text-anchor="start" x="165" y="-985" font-family="Arial" font-size="10.00" fill="#738696">PK</text>
+<polygon fill="#ffffff" stroke="transparent" points="0,-941 0,-972 100,-972 100,-941 0,-941"/>
+<polygon fill="none" stroke="#e2eae9" points="0,-941 0,-972 100,-972 100,-941 0,-941"/>
+<text text-anchor="start" x="9" y="-953.4" font-family="Arial" font-size="12.00" fill="#172f43">nome_exibicao</text>
+<polygon fill="#ffffff" stroke="transparent" points="100,-941 100,-972 188,-972 188,-941 100,-941"/>
+<polygon fill="none" stroke="#e2eae9" points="100,-941 100,-972 188,-972 188,-941 100,-941"/>
+<text text-anchor="start" x="129" y="-954" font-family="Arial" font-size="10.00" fill="#738696">VARCHAR</text>
+<polygon fill="#ffffff" stroke="transparent" points="0,-910 0,-941 100,-941 100,-910 0,-910"/>
+<polygon fill="none" stroke="#e2eae9" points="0,-910 0,-941 100,-941 100,-910 0,-910"/>
+<text text-anchor="start" x="9" y="-922.4" font-family="Arial" font-size="12.00" fill="#172f43">email</text>
+<polygon fill="#ffffff" stroke="transparent" points="100,-910 100,-941 188,-941 188,-910 100,-910"/>
+<polygon fill="none" stroke="#e2eae9" points="100,-910 100,-941 188,-941 188,-910 100,-910"/>
+<text text-anchor="start" x="129" y="-923" font-family="Arial" font-size="10.00" fill="#738696">VARCHAR</text>
+<polygon fill="#ffffff" stroke="transparent" points="0,-879 0,-910 100,-910 100,-879 0,-879"/>
+<polygon fill="none" stroke="#e2eae9" points="0,-879 0,-910 100,-910 100,-879 0,-879"/>
+<text text-anchor="start" x="9" y="-891.4" font-family="Arial" font-size="12.00" fill="#172f43">papel</text>
+<polygon fill="#ffffff" stroke="transparent" points="100,-879 100,-910 188,-910 188,-879 100,-879"/>
+<polygon fill="none" stroke="#e2eae9" points="100,-879 100,-910 188,-910 188,-879 100,-879"/>
+<text text-anchor="start" x="129" y="-892" font-family="Arial" font-size="10.00" fill="#738696">VARCHAR</text>
+<polygon fill="#ffffff" stroke="transparent" points="0,-848 0,-879 100,-879 100,-848 0,-848"/>
+<polygon fill="none" stroke="#e2eae9" points="0,-848 0,-879 100,-879 100,-848 0,-848"/>
+<text text-anchor="start" x="9" y="-860.4" font-family="Arial" font-size="12.00" fill="#172f43">criado_em</text>
+<polygon fill="#ffffff" stroke="transparent" points="100,-848 100,-879 188,-879 188,-848 100,-848"/>
+<polygon fill="none" stroke="#e2eae9" points="100,-848 100,-879 188,-879 188,-848 100,-848"/>
+<text text-anchor="start" x="109" y="-861" font-family="Arial" font-size="10.00" fill="#738696">TIMESTAMPTZ</text>
+</g>
+<!-- categorias -->
+<g id="node2" class="node">
+<title>categorias</title>
+<polygon fill="#ffffff" stroke="transparent" points="32.5,-636 32.5,-824 155.5,-824 155.5,-636 32.5,-636"/>
+<polygon fill="#147d78" stroke="transparent" points="33,-791 33,-824 156,-824 156,-791 33,-791"/>
+<polygon fill="none" stroke="#e2eae9" points="33,-791 33,-824 156,-824 156,-791 33,-791"/>
+<text text-anchor="start" x="42" y="-804.8" font-family="Arial" font-weight="bold" font-size="14.00" fill="#ffffff">Categorias</text>
+<polygon fill="#ffffff" stroke="transparent" points="33,-760 33,-791 88,-791 88,-760 33,-760"/>
+<polygon fill="none" stroke="#e2eae9" points="33,-760 33,-791 88,-791 88,-760 33,-760"/>
+<text text-anchor="start" x="42" y="-772.4" font-family="Arial" font-size="12.00" fill="#172f43">id</text>
+<polygon fill="#ffffff" stroke="transparent" points="88,-760 88,-791 156,-791 156,-760 88,-760"/>
+<polygon fill="none" stroke="#e2eae9" points="88,-760 88,-791 156,-791 156,-760 88,-760"/>
+<text text-anchor="start" x="133" y="-773" font-family="Arial" font-size="10.00" fill="#738696">PK</text>
+<polygon fill="#ffffff" stroke="transparent" points="33,-729 33,-760 88,-760 88,-729 33,-729"/>
+<polygon fill="none" stroke="#e2eae9" points="33,-729 33,-760 88,-760 88,-729 33,-729"/>
+<text text-anchor="start" x="42" y="-741.4" font-family="Arial" font-size="12.00" fill="#172f43">codigo</text>
+<polygon fill="#ffffff" stroke="transparent" points="88,-729 88,-760 156,-760 156,-729 88,-729"/>
+<polygon fill="none" stroke="#e2eae9" points="88,-729 88,-760 156,-760 156,-729 88,-729"/>
+<text text-anchor="start" x="97" y="-742" font-family="Arial" font-size="10.00" fill="#738696">VARCHAR</text>
+<polygon fill="#ffffff" stroke="transparent" points="33,-698 33,-729 88,-729 88,-698 33,-698"/>
+<polygon fill="none" stroke="#e2eae9" points="33,-698 33,-729 88,-729 88,-698 33,-698"/>
+<text text-anchor="start" x="42" y="-710.4" font-family="Arial" font-size="12.00" fill="#172f43">nome</text>
+<polygon fill="#ffffff" stroke="transparent" points="88,-698 88,-729 156,-729 156,-698 88,-698"/>
+<polygon fill="none" stroke="#e2eae9" points="88,-698 88,-729 156,-729 156,-698 88,-698"/>
+<text text-anchor="start" x="97" y="-711" font-family="Arial" font-size="10.00" fill="#738696">VARCHAR</text>
+<polygon fill="#ffffff" stroke="transparent" points="33,-667 33,-698 88,-698 88,-667 33,-667"/>
+<polygon fill="none" stroke="#e2eae9" points="33,-667 33,-698 88,-698 88,-667 33,-667"/>
+<text text-anchor="start" x="42" y="-679.4" font-family="Arial" font-size="12.00" fill="#172f43">grupo</text>
+<polygon fill="#ffffff" stroke="transparent" points="88,-667 88,-698 156,-698 156,-667 88,-667"/>
+<polygon fill="none" stroke="#e2eae9" points="88,-667 88,-698 156,-698 156,-667 88,-667"/>
+<text text-anchor="start" x="97" y="-680" font-family="Arial" font-size="10.00" fill="#738696">VARCHAR</text>
+<polygon fill="#ffffff" stroke="transparent" points="33,-636 33,-667 88,-667 88,-636 33,-636"/>
+<polygon fill="none" stroke="#e2eae9" points="33,-636 33,-667 88,-667 88,-636 33,-636"/>
+<text text-anchor="start" x="42" y="-648.4" font-family="Arial" font-size="12.00" fill="#172f43">ativa</text>
+<polygon fill="#ffffff" stroke="transparent" points="88,-636 88,-667 156,-667 156,-636 88,-636"/>
+<polygon fill="none" stroke="#e2eae9" points="88,-636 88,-667 156,-667 156,-636 88,-636"/>
+<text text-anchor="start" x="98" y="-649" font-family="Arial" font-size="10.00" fill="#738696">BOOLEAN</text>
+</g>
+<!-- bairros -->
+<g id="node3" class="node">
+<title>bairros</title>
+<polygon fill="#ffffff" stroke="transparent" points="35.5,-516.5 35.5,-611.5 152.5,-611.5 152.5,-516.5 35.5,-516.5"/>
+<polygon fill="#147d78" stroke="transparent" points="36,-578 36,-611 153,-611 153,-578 36,-578"/>
+<polygon fill="none" stroke="#e2eae9" points="36,-578 36,-611 153,-611 153,-578 36,-578"/>
+<text text-anchor="start" x="45" y="-591.8" font-family="Arial" font-weight="bold" font-size="14.00" fill="#ffffff">Bairros</text>
+<polygon fill="#ffffff" stroke="transparent" points="36,-547 36,-578 85,-578 85,-547 36,-547"/>
+<polygon fill="none" stroke="#e2eae9" points="36,-547 36,-578 85,-578 85,-547 36,-547"/>
+<text text-anchor="start" x="45" y="-559.4" font-family="Arial" font-size="12.00" fill="#172f43">id</text>
+<polygon fill="#ffffff" stroke="transparent" points="85,-547 85,-578 153,-578 153,-547 85,-547"/>
+<polygon fill="none" stroke="#e2eae9" points="85,-547 85,-578 153,-578 153,-547 85,-547"/>
+<text text-anchor="start" x="130" y="-560" font-family="Arial" font-size="10.00" fill="#738696">PK</text>
+<polygon fill="#ffffff" stroke="transparent" points="36,-516 36,-547 85,-547 85,-516 36,-516"/>
+<polygon fill="none" stroke="#e2eae9" points="36,-516 36,-547 85,-547 85,-516 36,-516"/>
+<text text-anchor="start" x="45" y="-528.4" font-family="Arial" font-size="12.00" fill="#172f43">nome</text>
+<polygon fill="#ffffff" stroke="transparent" points="85,-516 85,-547 153,-547 153,-516 85,-516"/>
+<polygon fill="none" stroke="#e2eae9" points="85,-516 85,-547 153,-547 153,-516 85,-516"/>
+<text text-anchor="start" x="94" y="-529" font-family="Arial" font-size="10.00" fill="#738696">VARCHAR</text>
+</g>
+<!-- ocorrencias -->
+<g id="node4" class="node">
+<title>ocorrencias</title>
+<polygon fill="#ffffff" stroke="transparent" points="306,-620.5 306,-839.5 510,-839.5 510,-620.5 306,-620.5"/>
+<polygon fill="#b12c48" stroke="transparent" points="306,-806 306,-839 510,-839 510,-806 306,-806"/>
+<polygon fill="none" stroke="#e2eae9" points="306,-806 306,-839 510,-839 510,-806 306,-806"/>
+<text text-anchor="start" x="315" y="-819.8" font-family="Arial" font-weight="bold" font-size="14.00" fill="#ffffff">Ocorrencias</text>
+<polygon fill="#ffffff" stroke="transparent" points="306,-775 306,-806 427,-806 427,-775 306,-775"/>
+<polygon fill="none" stroke="#e2eae9" points="306,-775 306,-806 427,-806 427,-775 306,-775"/>
+<text text-anchor="start" x="315" y="-787.4" font-family="Arial" font-size="12.00" fill="#172f43">id</text>
+<polygon fill="#ffffff" stroke="transparent" points="427,-775 427,-806 510,-806 510,-775 427,-775"/>
+<polygon fill="none" stroke="#e2eae9" points="427,-775 427,-806 510,-806 510,-775 427,-775"/>
+<text text-anchor="start" x="487" y="-788" font-family="Arial" font-size="10.00" fill="#738696">PK</text>
+<polygon fill="#ffffff" stroke="transparent" points="306,-744 306,-775 427,-775 427,-744 306,-744"/>
+<polygon fill="none" stroke="#e2eae9" points="306,-744 306,-775 427,-775 427,-744 306,-744"/>
+<text text-anchor="start" x="315" y="-756.4" font-family="Arial" font-size="12.00" fill="#172f43">protocolo</text>
+<polygon fill="#ffffff" stroke="transparent" points="427,-744 427,-775 510,-775 510,-744 427,-744"/>
+<polygon fill="none" stroke="#e2eae9" points="427,-744 427,-775 510,-775 510,-744 427,-744"/>
+<text text-anchor="start" x="451" y="-757" font-family="Arial" font-size="10.00" fill="#738696">VARCHAR</text>
+<polygon fill="#ffffff" stroke="transparent" points="306,-713 306,-744 427,-744 427,-713 306,-713"/>
+<polygon fill="none" stroke="#e2eae9" points="306,-713 306,-744 427,-744 427,-713 306,-713"/>
+<text text-anchor="start" x="315" y="-725.4" font-family="Arial" font-size="12.00" fill="#172f43">idempotencia_uuid</text>
+<polygon fill="#ffffff" stroke="transparent" points="427,-713 427,-744 510,-744 510,-713 427,-713"/>
+<polygon fill="none" stroke="#e2eae9" points="427,-713 427,-744 510,-744 510,-713 427,-713"/>
+<text text-anchor="start" x="475" y="-726" font-family="Arial" font-size="10.00" fill="#738696">UUID</text>
+<polygon fill="#ffffff" stroke="transparent" points="306,-682 306,-713 427,-713 427,-682 306,-682"/>
+<polygon fill="none" stroke="#e2eae9" points="306,-682 306,-713 427,-713 427,-682 306,-682"/>
+<text text-anchor="start" x="315" y="-694.4" font-family="Arial" font-size="12.00" fill="#172f43">categoria_id</text>
+<polygon fill="#ffffff" stroke="transparent" points="427,-682 427,-713 510,-713 510,-682 427,-682"/>
+<polygon fill="none" stroke="#e2eae9" points="427,-682 427,-713 510,-713 510,-682 427,-682"/>
+<text text-anchor="start" x="488" y="-695" font-family="Arial" font-size="10.00" fill="#738696">FK</text>
+<polygon fill="#ffffff" stroke="transparent" points="306,-651 306,-682 427,-682 427,-651 306,-651"/>
+<polygon fill="none" stroke="#e2eae9" points="306,-651 306,-682 427,-682 427,-651 306,-651"/>
+<text text-anchor="start" x="315" y="-663.4" font-family="Arial" font-size="12.00" fill="#172f43">localizacao</text>
+<polygon fill="#ffffff" stroke="transparent" points="427,-651 427,-682 510,-682 510,-651 427,-651"/>
+<polygon fill="none" stroke="#e2eae9" points="427,-651 427,-682 510,-682 510,-651 427,-651"/>
+<text text-anchor="start" x="436" y="-664" font-family="Arial" font-size="10.00" fill="#738696">GEOGRAPHY</text>
+<polygon fill="#ffffff" stroke="transparent" points="306,-620 306,-651 427,-651 427,-620 306,-620"/>
+<polygon fill="none" stroke="#e2eae9" points="306,-620 306,-651 427,-651 427,-620 306,-620"/>
+<text text-anchor="start" x="315" y="-632.4" font-family="Arial" font-size="12.00" fill="#172f43">status</text>
+<polygon fill="#ffffff" stroke="transparent" points="427,-620 427,-651 510,-651 510,-620 427,-620"/>
+<polygon fill="none" stroke="#e2eae9" points="427,-620 427,-651 510,-651 510,-620 427,-620"/>
+<text text-anchor="start" x="451" y="-633" font-family="Arial" font-size="10.00" fill="#738696">VARCHAR</text>
+</g>
+<!-- evidencias -->
+<g id="node5" class="node">
+<title>evidencias</title>
+<polygon fill="#ffffff" stroke="transparent" points="619,-1242 619,-1430 787,-1430 787,-1242 619,-1242"/>
+<polygon fill="#d78127" stroke="transparent" points="619,-1397 619,-1430 787,-1430 787,-1397 619,-1397"/>
+<polygon fill="none" stroke="#e2eae9" points="619,-1397 619,-1430 787,-1430 787,-1397 619,-1397"/>
+<text text-anchor="start" x="628" y="-1410.8" font-family="Arial" font-weight="bold" font-size="14.00" fill="#ffffff">Evidencias</text>
+<polygon fill="#ffffff" stroke="transparent" points="619,-1366 619,-1397 719,-1397 719,-1366 619,-1366"/>
+<polygon fill="none" stroke="#e2eae9" points="619,-1366 619,-1397 719,-1397 719,-1366 619,-1366"/>
+<text text-anchor="start" x="628" y="-1378.4" font-family="Arial" font-size="12.00" fill="#172f43">id</text>
+<polygon fill="#ffffff" stroke="transparent" points="719,-1366 719,-1397 787,-1397 787,-1366 719,-1366"/>
+<polygon fill="none" stroke="#e2eae9" points="719,-1366 719,-1397 787,-1397 787,-1366 719,-1366"/>
+<text text-anchor="start" x="764" y="-1379" font-family="Arial" font-size="10.00" fill="#738696">PK</text>
+<polygon fill="#ffffff" stroke="transparent" points="619,-1335 619,-1366 719,-1366 719,-1335 619,-1335"/>
+<polygon fill="none" stroke="#e2eae9" points="619,-1335 619,-1366 719,-1366 719,-1335 619,-1335"/>
+<text text-anchor="start" x="628" y="-1347.4" font-family="Arial" font-size="12.00" fill="#172f43">ocorrencia_id</text>
+<polygon fill="#ffffff" stroke="transparent" points="719,-1335 719,-1366 787,-1366 787,-1335 719,-1335"/>
+<polygon fill="none" stroke="#e2eae9" points="719,-1335 719,-1366 787,-1366 787,-1335 719,-1335"/>
+<text text-anchor="start" x="765" y="-1348" font-family="Arial" font-size="10.00" fill="#738696">FK</text>
+<polygon fill="#ffffff" stroke="transparent" points="619,-1304 619,-1335 719,-1335 719,-1304 619,-1304"/>
+<polygon fill="none" stroke="#e2eae9" points="619,-1304 619,-1335 719,-1335 719,-1304 619,-1304"/>
+<text text-anchor="start" x="628" y="-1316.4" font-family="Arial" font-size="12.00" fill="#172f43">chave_objeto</text>
+<polygon fill="#ffffff" stroke="transparent" points="719,-1304 719,-1335 787,-1335 787,-1304 719,-1304"/>
+<polygon fill="none" stroke="#e2eae9" points="719,-1304 719,-1335 787,-1335 787,-1304 719,-1304"/>
+<text text-anchor="start" x="752" y="-1317" font-family="Arial" font-size="10.00" fill="#738696">TEXT</text>
+<polygon fill="#ffffff" stroke="transparent" points="619,-1273 619,-1304 719,-1304 719,-1273 619,-1273"/>
+<polygon fill="none" stroke="#e2eae9" points="619,-1273 619,-1304 719,-1304 719,-1273 619,-1273"/>
+<text text-anchor="start" x="628" y="-1285.4" font-family="Arial" font-size="12.00" fill="#172f43">mime</text>
+<polygon fill="#ffffff" stroke="transparent" points="719,-1273 719,-1304 787,-1304 787,-1273 719,-1273"/>
+<polygon fill="none" stroke="#e2eae9" points="719,-1273 719,-1304 787,-1304 787,-1273 719,-1273"/>
+<text text-anchor="start" x="728" y="-1286" font-family="Arial" font-size="10.00" fill="#738696">VARCHAR</text>
+<polygon fill="#ffffff" stroke="transparent" points="619,-1242 619,-1273 719,-1273 719,-1242 619,-1242"/>
+<polygon fill="none" stroke="#e2eae9" points="619,-1242 619,-1273 719,-1273 719,-1242 619,-1242"/>
+<text text-anchor="start" x="628" y="-1254.4" font-family="Arial" font-size="12.00" fill="#172f43">tamanho_bytes</text>
+<polygon fill="#ffffff" stroke="transparent" points="719,-1242 719,-1273 787,-1273 787,-1242 719,-1242"/>
+<polygon fill="none" stroke="#e2eae9" points="719,-1242 719,-1273 787,-1273 787,-1242 719,-1242"/>
+<text text-anchor="start" x="732" y="-1255" font-family="Arial" font-size="10.00" fill="#738696">INTEGER</text>
+</g>
+<!-- confirmacoes_comunitarias -->
+<g id="node6" class="node">
+<title>confirmacoes_comunitarias</title>
+<polygon fill="#ffffff" stroke="transparent" points="613.5,-1060.5 613.5,-1217.5 792.5,-1217.5 792.5,-1060.5 613.5,-1060.5"/>
+<polygon fill="#d78127" stroke="transparent" points="614,-1184 614,-1217 793,-1217 793,-1184 614,-1184"/>
+<polygon fill="none" stroke="#e2eae9" points="614,-1184 614,-1217 793,-1217 793,-1184 614,-1184"/>
+<text text-anchor="start" x="623" y="-1197.8" font-family="Arial" font-weight="bold" font-size="14.00" fill="#ffffff">Confirmacoes</text>
+<polygon fill="#ffffff" stroke="transparent" points="614,-1153 614,-1184 705,-1184 705,-1153 614,-1153"/>
+<polygon fill="none" stroke="#e2eae9" points="614,-1153 614,-1184 705,-1184 705,-1153 614,-1153"/>
+<text text-anchor="start" x="623" y="-1165.4" font-family="Arial" font-size="12.00" fill="#172f43">id</text>
+<polygon fill="#ffffff" stroke="transparent" points="705,-1153 705,-1184 793,-1184 793,-1153 705,-1153"/>
+<polygon fill="none" stroke="#e2eae9" points="705,-1153 705,-1184 793,-1184 793,-1153 705,-1153"/>
+<text text-anchor="start" x="770" y="-1166" font-family="Arial" font-size="10.00" fill="#738696">PK</text>
+<polygon fill="#ffffff" stroke="transparent" points="614,-1122 614,-1153 705,-1153 705,-1122 614,-1122"/>
+<polygon fill="none" stroke="#e2eae9" points="614,-1122 614,-1153 705,-1153 705,-1122 614,-1122"/>
+<text text-anchor="start" x="623" y="-1134.4" font-family="Arial" font-size="12.00" fill="#172f43">ocorrencia_id</text>
+<polygon fill="#ffffff" stroke="transparent" points="705,-1122 705,-1153 793,-1153 793,-1122 705,-1122"/>
+<polygon fill="none" stroke="#e2eae9" points="705,-1122 705,-1153 793,-1153 793,-1122 705,-1122"/>
+<text text-anchor="start" x="771" y="-1135" font-family="Arial" font-size="10.00" fill="#738696">FK</text>
+<polygon fill="#ffffff" stroke="transparent" points="614,-1091 614,-1122 705,-1122 705,-1091 614,-1091"/>
+<polygon fill="none" stroke="#e2eae9" points="614,-1091 614,-1122 705,-1122 705,-1091 614,-1091"/>
+<text text-anchor="start" x="623" y="-1103.4" font-family="Arial" font-size="12.00" fill="#172f43">usuario_id</text>
+<polygon fill="#ffffff" stroke="transparent" points="705,-1091 705,-1122 793,-1122 793,-1091 705,-1091"/>
+<polygon fill="none" stroke="#e2eae9" points="705,-1091 705,-1122 793,-1122 793,-1091 705,-1091"/>
+<text text-anchor="start" x="771" y="-1104" font-family="Arial" font-size="10.00" fill="#738696">FK</text>
+<polygon fill="#ffffff" stroke="transparent" points="614,-1060 614,-1091 705,-1091 705,-1060 614,-1060"/>
+<polygon fill="none" stroke="#e2eae9" points="614,-1060 614,-1091 705,-1091 705,-1060 614,-1060"/>
+<text text-anchor="start" x="623" y="-1072.4" font-family="Arial" font-size="12.00" fill="#172f43">criado_em</text>
+<polygon fill="#ffffff" stroke="transparent" points="705,-1060 705,-1091 793,-1091 793,-1060 705,-1060"/>
+<polygon fill="none" stroke="#e2eae9" points="705,-1060 705,-1091 793,-1091 793,-1060 705,-1060"/>
+<text text-anchor="start" x="714" y="-1073" font-family="Arial" font-size="10.00" fill="#738696">TIMESTAMPTZ</text>
+</g>
+<!-- validacoes_tecnicas -->
+<g id="node7" class="node">
+<title>validacoes_tecnicas</title>
+<polygon fill="#ffffff" stroke="transparent" points="613.5,-848 613.5,-1036 792.5,-1036 792.5,-848 613.5,-848"/>
+<polygon fill="#4d64a8" stroke="transparent" points="614,-1003 614,-1036 793,-1036 793,-1003 614,-1003"/>
+<polygon fill="none" stroke="#e2eae9" points="614,-1003 614,-1036 793,-1036 793,-1003 614,-1003"/>
+<text text-anchor="start" x="623" y="-1016.8" font-family="Arial" font-weight="bold" font-size="14.00" fill="#ffffff">Validacoes tecnicas</text>
+<polygon fill="#ffffff" stroke="transparent" points="614,-972 614,-1003 705,-1003 705,-972 614,-972"/>
+<polygon fill="none" stroke="#e2eae9" points="614,-972 614,-1003 705,-1003 705,-972 614,-972"/>
+<text text-anchor="start" x="623" y="-984.4" font-family="Arial" font-size="12.00" fill="#172f43">id</text>
+<polygon fill="#ffffff" stroke="transparent" points="705,-972 705,-1003 793,-1003 793,-972 705,-972"/>
+<polygon fill="none" stroke="#e2eae9" points="705,-972 705,-1003 793,-1003 793,-972 705,-972"/>
+<text text-anchor="start" x="770" y="-985" font-family="Arial" font-size="10.00" fill="#738696">PK</text>
+<polygon fill="#ffffff" stroke="transparent" points="614,-941 614,-972 705,-972 705,-941 614,-941"/>
+<polygon fill="none" stroke="#e2eae9" points="614,-941 614,-972 705,-972 705,-941 614,-941"/>
+<text text-anchor="start" x="623" y="-953.4" font-family="Arial" font-size="12.00" fill="#172f43">ocorrencia_id</text>
+<polygon fill="#ffffff" stroke="transparent" points="705,-941 705,-972 793,-972 793,-941 705,-941"/>
+<polygon fill="none" stroke="#e2eae9" points="705,-941 705,-972 793,-972 793,-941 705,-941"/>
+<text text-anchor="start" x="771" y="-954" font-family="Arial" font-size="10.00" fill="#738696">FK</text>
+<polygon fill="#ffffff" stroke="transparent" points="614,-910 614,-941 705,-941 705,-910 614,-910"/>
+<polygon fill="none" stroke="#e2eae9" points="614,-910 614,-941 705,-941 705,-910 614,-910"/>
+<text text-anchor="start" x="623" y="-922.4" font-family="Arial" font-size="12.00" fill="#172f43">agente_id</text>
+<polygon fill="#ffffff" stroke="transparent" points="705,-910 705,-941 793,-941 793,-910 705,-910"/>
+<polygon fill="none" stroke="#e2eae9" points="705,-910 705,-941 793,-941 793,-910 705,-910"/>
+<text text-anchor="start" x="771" y="-923" font-family="Arial" font-size="10.00" fill="#738696">FK</text>
+<polygon fill="#ffffff" stroke="transparent" points="614,-879 614,-910 705,-910 705,-879 614,-879"/>
+<polygon fill="none" stroke="#e2eae9" points="614,-879 614,-910 705,-910 705,-879 614,-879"/>
+<text text-anchor="start" x="623" y="-891.4" font-family="Arial" font-size="12.00" fill="#172f43">resultado</text>
+<polygon fill="#ffffff" stroke="transparent" points="705,-879 705,-910 793,-910 793,-879 705,-879"/>
+<polygon fill="none" stroke="#e2eae9" points="705,-879 705,-910 793,-910 793,-879 705,-879"/>
+<text text-anchor="start" x="734" y="-892" font-family="Arial" font-size="10.00" fill="#738696">VARCHAR</text>
+<polygon fill="#ffffff" stroke="transparent" points="614,-848 614,-879 705,-879 705,-848 614,-848"/>
+<polygon fill="none" stroke="#e2eae9" points="614,-848 614,-879 705,-879 705,-848 614,-848"/>
+<text text-anchor="start" x="623" y="-860.4" font-family="Arial" font-size="12.00" fill="#172f43">validado_em</text>
+<polygon fill="#ffffff" stroke="transparent" points="705,-848 705,-879 793,-879 793,-848 705,-848"/>
+<polygon fill="none" stroke="#e2eae9" points="705,-848 705,-879 793,-879 793,-848 705,-848"/>
+<text text-anchor="start" x="714" y="-861" font-family="Arial" font-size="10.00" fill="#738696">TIMESTAMPTZ</text>
+</g>
+<!-- intervencoes -->
+<g id="node8" class="node">
+<title>intervencoes</title>
+<polygon fill="#ffffff" stroke="transparent" points="613.5,-636 613.5,-824 792.5,-824 792.5,-636 613.5,-636"/>
+<polygon fill="#4d64a8" stroke="transparent" points="614,-791 614,-824 793,-824 793,-791 614,-791"/>
+<polygon fill="none" stroke="#e2eae9" points="614,-791 614,-824 793,-824 793,-791 614,-791"/>
+<text text-anchor="start" x="623" y="-804.8" font-family="Arial" font-weight="bold" font-size="14.00" fill="#ffffff">Intervencoes</text>
+<polygon fill="#ffffff" stroke="transparent" points="614,-760 614,-791 705,-791 705,-760 614,-760"/>
+<polygon fill="none" stroke="#e2eae9" points="614,-760 614,-791 705,-791 705,-760 614,-760"/>
+<text text-anchor="start" x="623" y="-772.4" font-family="Arial" font-size="12.00" fill="#172f43">id</text>
+<polygon fill="#ffffff" stroke="transparent" points="705,-760 705,-791 793,-791 793,-760 705,-760"/>
+<polygon fill="none" stroke="#e2eae9" points="705,-760 705,-791 793,-791 793,-760 705,-760"/>
+<text text-anchor="start" x="770" y="-773" font-family="Arial" font-size="10.00" fill="#738696">PK</text>
+<polygon fill="#ffffff" stroke="transparent" points="614,-729 614,-760 705,-760 705,-729 614,-729"/>
+<polygon fill="none" stroke="#e2eae9" points="614,-729 614,-760 705,-760 705,-729 614,-729"/>
+<text text-anchor="start" x="623" y="-741.4" font-family="Arial" font-size="12.00" fill="#172f43">ocorrencia_id</text>
+<polygon fill="#ffffff" stroke="transparent" points="705,-729 705,-760 793,-760 793,-729 705,-729"/>
+<polygon fill="none" stroke="#e2eae9" points="705,-729 705,-760 793,-760 793,-729 705,-729"/>
+<text text-anchor="start" x="771" y="-742" font-family="Arial" font-size="10.00" fill="#738696">FK</text>
+<polygon fill="#ffffff" stroke="transparent" points="614,-698 614,-729 705,-729 705,-698 614,-698"/>
+<polygon fill="none" stroke="#e2eae9" points="614,-698 614,-729 705,-729 705,-698 614,-698"/>
+<text text-anchor="start" x="623" y="-710.4" font-family="Arial" font-size="12.00" fill="#172f43">agente_id</text>
+<polygon fill="#ffffff" stroke="transparent" points="705,-698 705,-729 793,-729 793,-698 705,-698"/>
+<polygon fill="none" stroke="#e2eae9" points="705,-698 705,-729 793,-729 793,-698 705,-698"/>
+<text text-anchor="start" x="771" y="-711" font-family="Arial" font-size="10.00" fill="#738696">FK</text>
+<polygon fill="#ffffff" stroke="transparent" points="614,-667 614,-698 705,-698 705,-667 614,-667"/>
+<polygon fill="none" stroke="#e2eae9" points="614,-667 614,-698 705,-698 705,-667 614,-667"/>
+<text text-anchor="start" x="623" y="-679.4" font-family="Arial" font-size="12.00" fill="#172f43">situacao</text>
+<polygon fill="#ffffff" stroke="transparent" points="705,-667 705,-698 793,-698 793,-667 705,-667"/>
+<polygon fill="none" stroke="#e2eae9" points="705,-667 705,-698 793,-698 793,-667 705,-667"/>
+<text text-anchor="start" x="734" y="-680" font-family="Arial" font-size="10.00" fill="#738696">VARCHAR</text>
+<polygon fill="#ffffff" stroke="transparent" points="614,-636 614,-667 705,-667 705,-636 614,-636"/>
+<polygon fill="none" stroke="#e2eae9" points="614,-636 614,-667 705,-667 705,-636 614,-636"/>
+<text text-anchor="start" x="623" y="-648.4" font-family="Arial" font-size="12.00" fill="#172f43">iniciada_em</text>
+<polygon fill="#ffffff" stroke="transparent" points="705,-636 705,-667 793,-667 793,-636 705,-636"/>
+<polygon fill="none" stroke="#e2eae9" points="705,-636 705,-667 793,-667 793,-636 705,-636"/>
+<text text-anchor="start" x="714" y="-649" font-family="Arial" font-size="10.00" fill="#738696">TIMESTAMPTZ</text>
+</g>
+<!-- retornos_comunitarios -->
+<g id="node9" class="node">
+<title>retornos_comunitarios</title>
+<polygon fill="#ffffff" stroke="transparent" points="611.5,-424 611.5,-612 794.5,-612 794.5,-424 611.5,-424"/>
+<polygon fill="#d78127" stroke="transparent" points="612,-579 612,-612 795,-612 795,-579 612,-579"/>
+<polygon fill="none" stroke="#e2eae9" points="612,-579 612,-612 795,-612 795,-579 612,-579"/>
+<text text-anchor="start" x="621" y="-592.8" font-family="Arial" font-weight="bold" font-size="14.00" fill="#ffffff">Retornos</text>
+<polygon fill="#ffffff" stroke="transparent" points="612,-548 612,-579 707,-579 707,-548 612,-548"/>
+<polygon fill="none" stroke="#e2eae9" points="612,-548 612,-579 707,-579 707,-548 612,-548"/>
+<text text-anchor="start" x="621" y="-560.4" font-family="Arial" font-size="12.00" fill="#172f43">id</text>
+<polygon fill="#ffffff" stroke="transparent" points="707,-548 707,-579 795,-579 795,-548 707,-548"/>
+<polygon fill="none" stroke="#e2eae9" points="707,-548 707,-579 795,-579 795,-548 707,-548"/>
+<text text-anchor="start" x="772" y="-561" font-family="Arial" font-size="10.00" fill="#738696">PK</text>
+<polygon fill="#ffffff" stroke="transparent" points="612,-517 612,-548 707,-548 707,-517 612,-517"/>
+<polygon fill="none" stroke="#e2eae9" points="612,-517 612,-548 707,-548 707,-517 612,-517"/>
+<text text-anchor="start" x="621" y="-529.4" font-family="Arial" font-size="12.00" fill="#172f43">ocorrencia_id</text>
+<polygon fill="#ffffff" stroke="transparent" points="707,-517 707,-548 795,-548 795,-517 707,-517"/>
+<polygon fill="none" stroke="#e2eae9" points="707,-517 707,-548 795,-548 795,-517 707,-517"/>
+<text text-anchor="start" x="773" y="-530" font-family="Arial" font-size="10.00" fill="#738696">FK</text>
+<polygon fill="#ffffff" stroke="transparent" points="612,-486 612,-517 707,-517 707,-486 612,-486"/>
+<polygon fill="none" stroke="#e2eae9" points="612,-486 612,-517 707,-517 707,-486 612,-486"/>
+<text text-anchor="start" x="621" y="-498.4" font-family="Arial" font-size="12.00" fill="#172f43">usuario_id</text>
+<polygon fill="#ffffff" stroke="transparent" points="707,-486 707,-517 795,-517 795,-486 707,-486"/>
+<polygon fill="none" stroke="#e2eae9" points="707,-486 707,-517 795,-517 795,-486 707,-486"/>
+<text text-anchor="start" x="773" y="-499" font-family="Arial" font-size="10.00" fill="#738696">FK</text>
+<polygon fill="#ffffff" stroke="transparent" points="612,-455 612,-486 707,-486 707,-455 612,-455"/>
+<polygon fill="none" stroke="#e2eae9" points="612,-455 612,-486 707,-486 707,-455 612,-455"/>
+<text text-anchor="start" x="621" y="-467.4" font-family="Arial" font-size="12.00" fill="#172f43">percepcao</text>
+<polygon fill="#ffffff" stroke="transparent" points="707,-455 707,-486 795,-486 795,-455 707,-455"/>
+<polygon fill="none" stroke="#e2eae9" points="707,-455 707,-486 795,-486 795,-455 707,-455"/>
+<text text-anchor="start" x="736" y="-468" font-family="Arial" font-size="10.00" fill="#738696">VARCHAR</text>
+<polygon fill="#ffffff" stroke="transparent" points="612,-424 612,-455 707,-455 707,-424 612,-424"/>
+<polygon fill="none" stroke="#e2eae9" points="612,-424 612,-455 707,-455 707,-424 612,-424"/>
+<text text-anchor="start" x="621" y="-436.4" font-family="Arial" font-size="12.00" fill="#172f43">informado_em</text>
+<polygon fill="#ffffff" stroke="transparent" points="707,-424 707,-455 795,-455 795,-424 707,-424"/>
+<polygon fill="none" stroke="#e2eae9" points="707,-424 707,-455 795,-455 795,-424 707,-424"/>
+<text text-anchor="start" x="716" y="-437" font-family="Arial" font-size="10.00" fill="#738696">TIMESTAMPTZ</text>
+</g>
+<!-- historico_status -->
+<g id="node10" class="node">
+<title>historico_status</title>
+<polygon fill="#ffffff" stroke="transparent" points="613.5,-212 613.5,-400 792.5,-400 792.5,-212 613.5,-212"/>
+<polygon fill="#687684" stroke="transparent" points="614,-367 614,-400 793,-400 793,-367 614,-367"/>
+<polygon fill="none" stroke="#e2eae9" points="614,-367 614,-400 793,-400 793,-367 614,-367"/>
+<text text-anchor="start" x="623" y="-380.8" font-family="Arial" font-weight="bold" font-size="14.00" fill="#ffffff">Historico de status</text>
+<polygon fill="#ffffff" stroke="transparent" points="614,-336 614,-367 705,-367 705,-336 614,-336"/>
+<polygon fill="none" stroke="#e2eae9" points="614,-336 614,-367 705,-367 705,-336 614,-336"/>
+<text text-anchor="start" x="623" y="-348.4" font-family="Arial" font-size="12.00" fill="#172f43">id</text>
+<polygon fill="#ffffff" stroke="transparent" points="705,-336 705,-367 793,-367 793,-336 705,-336"/>
+<polygon fill="none" stroke="#e2eae9" points="705,-336 705,-367 793,-367 793,-336 705,-336"/>
+<text text-anchor="start" x="770" y="-349" font-family="Arial" font-size="10.00" fill="#738696">PK</text>
+<polygon fill="#ffffff" stroke="transparent" points="614,-305 614,-336 705,-336 705,-305 614,-305"/>
+<polygon fill="none" stroke="#e2eae9" points="614,-305 614,-336 705,-336 705,-305 614,-305"/>
+<text text-anchor="start" x="623" y="-317.4" font-family="Arial" font-size="12.00" fill="#172f43">ocorrencia_id</text>
+<polygon fill="#ffffff" stroke="transparent" points="705,-305 705,-336 793,-336 793,-305 705,-305"/>
+<polygon fill="none" stroke="#e2eae9" points="705,-305 705,-336 793,-336 793,-305 705,-305"/>
+<text text-anchor="start" x="771" y="-318" font-family="Arial" font-size="10.00" fill="#738696">FK</text>
+<polygon fill="#ffffff" stroke="transparent" points="614,-274 614,-305 705,-305 705,-274 614,-274"/>
+<polygon fill="none" stroke="#e2eae9" points="614,-274 614,-305 705,-305 705,-274 614,-274"/>
+<text text-anchor="start" x="623" y="-286.4" font-family="Arial" font-size="12.00" fill="#172f43">ator_id</text>
+<polygon fill="#ffffff" stroke="transparent" points="705,-274 705,-305 793,-305 793,-274 705,-274"/>
+<polygon fill="none" stroke="#e2eae9" points="705,-274 705,-305 793,-305 793,-274 705,-274"/>
+<text text-anchor="start" x="771" y="-287" font-family="Arial" font-size="10.00" fill="#738696">FK</text>
+<polygon fill="#ffffff" stroke="transparent" points="614,-243 614,-274 705,-274 705,-243 614,-243"/>
+<polygon fill="none" stroke="#e2eae9" points="614,-243 614,-274 705,-274 705,-243 614,-243"/>
+<text text-anchor="start" x="623" y="-255.4" font-family="Arial" font-size="12.00" fill="#172f43">novo_status</text>
+<polygon fill="#ffffff" stroke="transparent" points="705,-243 705,-274 793,-274 793,-243 705,-243"/>
+<polygon fill="none" stroke="#e2eae9" points="705,-243 705,-274 793,-274 793,-243 705,-243"/>
+<text text-anchor="start" x="734" y="-256" font-family="Arial" font-size="10.00" fill="#738696">VARCHAR</text>
+<polygon fill="#ffffff" stroke="transparent" points="614,-212 614,-243 705,-243 705,-212 614,-212"/>
+<polygon fill="none" stroke="#e2eae9" points="614,-212 614,-243 705,-243 705,-212 614,-212"/>
+<text text-anchor="start" x="623" y="-224.4" font-family="Arial" font-size="12.00" fill="#172f43">alterado_em</text>
+<polygon fill="#ffffff" stroke="transparent" points="705,-212 705,-243 793,-243 793,-212 705,-212"/>
+<polygon fill="none" stroke="#e2eae9" points="705,-212 705,-243 793,-243 793,-212 705,-212"/>
+<text text-anchor="start" x="714" y="-225" font-family="Arial" font-size="10.00" fill="#738696">TIMESTAMPTZ</text>
+</g>
+<!-- sugestoes_ia -->
+<g id="node11" class="node">
+<title>sugestoes_ia</title>
+<polygon fill="#ffffff" stroke="transparent" points="600,0 600,-188 806,-188 806,0 600,0"/>
+<polygon fill="#7867ab" stroke="transparent" points="600,-155 600,-188 806,-188 806,-155 600,-155"/>
+<polygon fill="none" stroke="#e2eae9" points="600,-155 600,-188 806,-188 806,-155 600,-155"/>
+<text text-anchor="start" x="609" y="-168.8" font-family="Arial" font-weight="bold" font-size="14.00" fill="#ffffff">Sugestoes de IA</text>
+<polygon fill="#ffffff" stroke="transparent" points="600,-124 600,-155 738,-155 738,-124 600,-124"/>
+<polygon fill="none" stroke="#e2eae9" points="600,-124 600,-155 738,-155 738,-124 600,-124"/>
+<text text-anchor="start" x="609" y="-136.4" font-family="Arial" font-size="12.00" fill="#172f43">id</text>
+<polygon fill="#ffffff" stroke="transparent" points="738,-124 738,-155 806,-155 806,-124 738,-124"/>
+<polygon fill="none" stroke="#e2eae9" points="738,-124 738,-155 806,-155 806,-124 738,-124"/>
+<text text-anchor="start" x="783" y="-137" font-family="Arial" font-size="10.00" fill="#738696">PK</text>
+<polygon fill="#ffffff" stroke="transparent" points="600,-93 600,-124 738,-124 738,-93 600,-93"/>
+<polygon fill="none" stroke="#e2eae9" points="600,-93 600,-124 738,-124 738,-93 600,-93"/>
+<text text-anchor="start" x="609" y="-105.4" font-family="Arial" font-size="12.00" fill="#172f43">ocorrencia_id</text>
+<polygon fill="#ffffff" stroke="transparent" points="738,-93 738,-124 806,-124 806,-93 738,-93"/>
+<polygon fill="none" stroke="#e2eae9" points="738,-93 738,-124 806,-124 806,-93 738,-93"/>
+<text text-anchor="start" x="784" y="-106" font-family="Arial" font-size="10.00" fill="#738696">FK</text>
+<polygon fill="#ffffff" stroke="transparent" points="600,-62 600,-93 738,-93 738,-62 600,-62"/>
+<polygon fill="none" stroke="#e2eae9" points="600,-62 600,-93 738,-93 738,-62 600,-62"/>
+<text text-anchor="start" x="609" y="-74.4" font-family="Arial" font-size="12.00" fill="#172f43">categoria_sugerida_id</text>
+<polygon fill="#ffffff" stroke="transparent" points="738,-62 738,-93 806,-93 806,-62 738,-62"/>
+<polygon fill="none" stroke="#e2eae9" points="738,-62 738,-93 806,-93 806,-62 738,-62"/>
+<text text-anchor="start" x="784" y="-75" font-family="Arial" font-size="10.00" fill="#738696">FK</text>
+<polygon fill="#ffffff" stroke="transparent" points="600,-31 600,-62 738,-62 738,-31 600,-31"/>
+<polygon fill="none" stroke="#e2eae9" points="600,-31 600,-62 738,-62 738,-31 600,-31"/>
+<text text-anchor="start" x="609" y="-43.4" font-family="Arial" font-size="12.00" fill="#172f43">confianca</text>
+<polygon fill="#ffffff" stroke="transparent" points="738,-31 738,-62 806,-62 806,-31 738,-31"/>
+<polygon fill="none" stroke="#e2eae9" points="738,-31 738,-62 806,-62 806,-31 738,-31"/>
+<text text-anchor="start" x="748" y="-44" font-family="Arial" font-size="10.00" fill="#738696">NUMERIC</text>
+<polygon fill="#ffffff" stroke="transparent" points="600,0 600,-31 738,-31 738,0 600,0"/>
+<polygon fill="none" stroke="#e2eae9" points="600,0 600,-31 738,-31 738,0 600,0"/>
+<text text-anchor="start" x="609" y="-12.4" font-family="Arial" font-size="12.00" fill="#172f43">versao_modelo</text>
+<polygon fill="#ffffff" stroke="transparent" points="738,0 738,-31 806,-31 806,0 738,0"/>
+<polygon fill="none" stroke="#e2eae9" points="738,0 738,-31 806,-31 806,0 738,0"/>
+<text text-anchor="start" x="747" y="-13" font-family="Arial" font-size="10.00" fill="#738696">VARCHAR</text>
+</g>
+</g>
+</svg>
+</div></div><div class="legend"><span><i style="background:#B12C48"></i>N&uacute;cleo: ocorr&ecirc;ncias</span><span><i style="background:#147D78"></i>Cat&aacute;logos e territ&oacute;rio</span><span><i style="background:#D78127"></i>Comunidade/evid&ecirc;ncias</span><span><i style="background:#4D64A8"></i>Atendimento</span><span><i style="background:#687684"></i>Auditoria</span><span><i style="background:#7867AB"></i>IA opcional</span></div><p class="hint">Tr&ecirc;s liga&ccedil;&otilde;es secund&aacute;rias com <code>usuarios</code> e a sugest&atilde;o de categoria por IA est&atilde;o detalhadas na matriz de relacionamentos. Setas partem da tabela referenciada para a dependente.</p></section>
+<section class="section" id="relacoes"><div class="section-kicker">02 / Integridade relacional</div><h2>Cardinalidades e chaves estrangeiras</h2><div class="table-scroll"><table><thead><tr><th>Origem</th><th>Destino</th><th>Cardinalidade</th><th>FK</th><th>Regra</th></tr></thead><tbody><tr><td>Usu&aacute;rios</td><td>Ocorr&ecirc;ncias</td><td>0..1 para N</td><td><code>ocorrencias.usuario_id</code></td><td>Relato pode ser enviado sem cadastro.</td></tr><tr><td>Categorias</td><td>Ocorr&ecirc;ncias</td><td>1 para N</td><td><code>ocorrencias.categoria_id</code></td><td>Categoria obrigat&oacute;ria.</td></tr><tr><td>Bairros</td><td>Ocorr&ecirc;ncias</td><td>0..1 para N</td><td><code>ocorrencias.bairro_id</code></td><td>Bairro pode ser definido ap&oacute;s geocodifica&ccedil;&atilde;o.</td></tr><tr><td>Ocorr&ecirc;ncias</td><td>Evid&ecirc;ncias</td><td>1 para 0..N</td><td><code>evidencias.ocorrencia_id</code></td><td>Fotos com arquivo em bucket privado.</td></tr><tr><td>Ocorr&ecirc;ncias</td><td>Confirma&ccedil;&otilde;es</td><td>1 para 0..N</td><td><code>confirmacoes_comunitarias.ocorrencia_id</code></td><td>Uma confirma&ccedil;&atilde;o por conta/ocorr&ecirc;ncia.</td></tr><tr><td>Usu&aacute;rios</td><td>Confirma&ccedil;&otilde;es</td><td>1 para 0..N</td><td><code>confirmacoes_comunitarias.usuario_id</code></td><td>Participa&ccedil;&atilde;o requer identidade de usu&aacute;rio.</td></tr><tr><td>Ocorr&ecirc;ncias</td><td>Valida&ccedil;&otilde;es</td><td>1 para 0..N</td><td><code>validacoes_tecnicas.ocorrencia_id</code></td><td>M&uacute;ltiplos pareceres t&eacute;cnicos s&atilde;o poss&iacute;veis.</td></tr><tr><td>Usu&aacute;rios (agentes)</td><td>Valida&ccedil;&otilde;es</td><td>1 para 0..N</td><td><code>validacoes_tecnicas.agente_id</code></td><td>Papel de agente/gestor conferido pela API.</td></tr><tr><td>Ocorr&ecirc;ncias</td><td>Interven&ccedil;&otilde;es</td><td>1 para 0..N</td><td><code>intervencoes.ocorrencia_id</code></td><td>Uma ocorr&ecirc;ncia pode demandar mais de uma a&ccedil;&atilde;o.</td></tr><tr><td>Usu&aacute;rios (agentes)</td><td>Interven&ccedil;&otilde;es</td><td>1 para 0..N</td><td><code>intervencoes.agente_id</code></td><td>Profissional respons&aacute;vel pelo registro.</td></tr><tr><td>Ocorr&ecirc;ncias</td><td>Retornos</td><td>1 para 0..N</td><td><code>retornos_comunitarios.ocorrencia_id</code></td><td>Retorno pode ser an&ocirc;nimo via segredo do protocolo.</td></tr><tr><td>Ocorr&ecirc;ncias</td><td>Hist&oacute;rico</td><td>1 para 0..N</td><td><code>historico_status.ocorrencia_id</code></td><td>Eventos adicionados sem apagar o passado.</td></tr><tr><td>Ocorr&ecirc;ncias</td><td>Sugest&otilde;es de IA</td><td>1 para 0..N</td><td><code>sugestoes_ia.ocorrencia_id</code></td><td>Opcional; nunca &eacute; valida&ccedil;&atilde;o t&eacute;cnica.</td></tr></tbody></table></div><p>Nota: a categoria tamb&eacute;m &eacute; referenciada por <code>sugestoes_ia.categoria_sugerida_id</code> (opcional), e o usu&aacute;rio por <code>retornos_comunitarios.usuario_id</code> e <code>historico_status.ator_id</code> (ambos opcionais).</p></section>
+<section class="section" id="dicionario"><div class="section-kicker">03 / Dicion&aacute;rio de dados</div><div class="diagram-head"><div><h2>O que cada tabela armazena</h2><p>Tipos SQL, chaves e finalidade dos atributos da proposta. Abra as entidades para consultar os campos.</p></div><div class="zoom-tools"><button class="btn" id="open-all" type="button">Expandir todas</button><button class="btn" id="close-all" type="button">Recolher</button></div></div><div class="dict-grid"><details class="dict-item" id="t-usuarios"><summary><span class="dict-title"><i style="background:#134D73"></i>Usuarios</span><span class="dict-meta">5 campos <span class="chev">&#9662;</span></span></summary><div class="dict-inner"><p>Identidades de moradores cadastrados, agentes e gestores.</p><div class="table-scroll"><table><thead><tr><th>Campo</th><th>Tipo</th><th>Restri&ccedil;&atilde;o</th><th>Fun&ccedil;&atilde;o</th></tr></thead><tbody><tr><td><code>id</code></td><td><code>UUID</code></td><td>PK</td><td>Identificador UUID da conta.</td></tr><tr><td><code>nome_exibicao</code></td><td><code>VARCHAR(100)</code></td><td>NOT NULL</td><td>Nome curto para exibi&ccedil;&atilde;o.</td></tr><tr><td><code>email</code></td><td><code>VARCHAR(180)</code></td><td>UNIQUE, opcional</td><td>Contato opcional; pode ser nulo.</td></tr><tr><td><code>papel</code></td><td><code>VARCHAR(20)</code></td><td>NOT NULL</td><td>Morador, agente ou gestor.</td></tr><tr><td><code>criado_em</code></td><td><code>TIMESTAMPTZ</code></td><td>NOT NULL</td><td>Data de cria&ccedil;&atilde;o da conta.</td></tr></tbody></table></div></div></details><details class="dict-item" id="t-categorias"><summary><span class="dict-title"><i style="background:#147D78"></i>Categorias</span><span class="dict-meta">5 campos <span class="chev">&#9662;</span></span></summary><div class="dict-inner"><p>Classes de ocorrencia configuradas pela gestao.</p><div class="table-scroll"><table><thead><tr><th>Campo</th><th>Tipo</th><th>Restri&ccedil;&atilde;o</th><th>Fun&ccedil;&atilde;o</th></tr></thead><tbody><tr><td><code>id</code></td><td><code>SMALLSERIAL</code></td><td>PK</td><td>Identificador da categoria.</td></tr><tr><td><code>codigo</code></td><td><code>VARCHAR(50)</code></td><td>UNIQUE, NOT NULL</td><td>Chave curta e est&aacute;vel usada pela API.</td></tr><tr><td><code>nome</code></td><td><code>VARCHAR(100)</code></td><td>NOT NULL</td><td>R&oacute;tulo amig&aacute;vel para o cidad&atilde;o.</td></tr><tr><td><code>grupo</code></td><td><code>VARCHAR(24)</code></td><td>NOT NULL</td><td>Vetor, roedor, pe&ccedil;onhento etc.</td></tr><tr><td><code>ativa</code></td><td><code>BOOLEAN</code></td><td>NOT NULL</td><td>Controla exibi&ccedil;&atilde;o no formul&aacute;rio.</td></tr></tbody></table></div></div></details><details class="dict-item" id="t-bairros"><summary><span class="dict-title"><i style="background:#147D78"></i>Bairros</span><span class="dict-meta">2 campos <span class="chev">&#9662;</span></span></summary><div class="dict-inner"><p>Referencia territorial sem expor um endereco residencial.</p><div class="table-scroll"><table><thead><tr><th>Campo</th><th>Tipo</th><th>Restri&ccedil;&atilde;o</th><th>Fun&ccedil;&atilde;o</th></tr></thead><tbody><tr><td><code>id</code></td><td><code>SMALLSERIAL</code></td><td>PK</td><td>Identificador territorial.</td></tr><tr><td><code>nome</code></td><td><code>VARCHAR(90)</code></td><td>UNIQUE, NOT NULL</td><td>Nome oficial usado para filtros e agrega&ccedil;&atilde;o.</td></tr></tbody></table></div></div></details><details class="dict-item" id="t-ocorrencias"><summary><span class="dict-title"><i style="background:#B12C48"></i>Ocorrencias</span><span class="dict-meta">14 campos <span class="chev">&#9662;</span></span></summary><div class="dict-inner"><p>Registro principal, com localizacao exata guardada em area restrita.</p><div class="table-scroll"><table><thead><tr><th>Campo</th><th>Tipo</th><th>Restri&ccedil;&atilde;o</th><th>Fun&ccedil;&atilde;o</th></tr></thead><tbody><tr><td><code>id</code></td><td><code>UUID</code></td><td>PK</td><td>Identificador interno UUID.</td></tr><tr><td><code>protocolo</code></td><td><code>VARCHAR(24)</code></td><td>UNIQUE, NOT NULL</td><td>C&oacute;digo p&uacute;blico para acompanhamento.</td></tr><tr><td><code>idempotencia_uuid</code></td><td><code>UUID</code></td><td>UNIQUE, NOT NULL</td><td>Chave enviada pela PWA: impede reenvio duplicado.</td></tr><tr><td><code>usuario_id</code></td><td><code>UUID</code></td><td>FK, opcional</td><td>Autor cadastrado, se houver; pode ser an&ocirc;nimo.</td></tr><tr><td><code>categoria_id</code></td><td><code>SMALLINT</code></td><td>FK, NOT NULL</td><td>Categoria escolhida pelo morador.</td></tr><tr><td><code>bairro_id</code></td><td><code>SMALLINT</code></td><td>FK, opcional</td><td>Bairro estimado/confirmado; pode ficar vazio inicialmente.</td></tr><tr><td><code>descricao</code></td><td><code>TEXT</code></td><td>NOT NULL</td><td>Relato em linguagem simples, limitado a 2.000 caracteres.</td></tr><tr><td><code>localizacao</code></td><td><code>GEOGRAPHY(POINT, 4326)</code></td><td>NOT NULL</td><td>Ponto exato (WGS84), acesso restrito.</td></tr><tr><td><code>origem_localizacao</code></td><td><code>VARCHAR(10)</code></td><td>NOT NULL</td><td>Origem GPS ou sele&ccedil;&atilde;o manual.</td></tr><tr><td><code>token_acompanhamento_hash</code></td><td><code>CHAR(64)</code></td><td>NOT NULL</td><td>Hash do segredo de acesso; nunca guarda token puro.</td></tr><tr><td><code>observado_em</code></td><td><code>TIMESTAMPTZ</code></td><td>opcional</td><td>Quando o fato foi observado.</td></tr><tr><td><code>status</code></td><td><code>VARCHAR(24)</code></td><td>NOT NULL</td><td>Estado atual para listas e filtros.</td></tr><tr><td><code>criado_em</code></td><td><code>TIMESTAMPTZ</code></td><td>NOT NULL</td><td>Momento do registro aceito pelo servidor.</td></tr><tr><td><code>atualizado_em</code></td><td><code>TIMESTAMPTZ</code></td><td>NOT NULL</td><td>Momento da &uacute;ltima atualiza&ccedil;&atilde;o.</td></tr></tbody></table></div></div></details><details class="dict-item" id="t-evidencias"><summary><span class="dict-title"><i style="background:#D78127"></i>Evidencias</span><span class="dict-meta">6 campos <span class="chev">&#9662;</span></span></summary><div class="dict-inner"><p>Metadados de fotografias no armazenamento privado.</p><div class="table-scroll"><table><thead><tr><th>Campo</th><th>Tipo</th><th>Restri&ccedil;&atilde;o</th><th>Fun&ccedil;&atilde;o</th></tr></thead><tbody><tr><td><code>id</code></td><td><code>UUID</code></td><td>PK</td><td>Identificador da evid&ecirc;ncia.</td></tr><tr><td><code>ocorrencia_id</code></td><td><code>UUID</code></td><td>FK, NOT NULL</td><td>Ocorr&ecirc;ncia associada.</td></tr><tr><td><code>chave_objeto</code></td><td><code>TEXT</code></td><td>UNIQUE, NOT NULL</td><td>Identificador interno do arquivo no bucket privado.</td></tr><tr><td><code>mime</code></td><td><code>VARCHAR(24)</code></td><td>NOT NULL</td><td>Formato permitido: JPEG, PNG ou WebP.</td></tr><tr><td><code>tamanho_bytes</code></td><td><code>INTEGER</code></td><td>NOT NULL</td><td>Tamanho do arquivo, at&eacute; 10 MB.</td></tr><tr><td><code>enviado_em</code></td><td><code>TIMESTAMPTZ</code></td><td>NOT NULL</td><td>Momento do recebimento da imagem.</td></tr></tbody></table></div></div></details><details class="dict-item" id="t-confirmacoes_comunitarias"><summary><span class="dict-title"><i style="background:#D78127"></i>Confirmacoes</span><span class="dict-meta">4 campos <span class="chev">&#9662;</span></span></summary><div class="dict-inner"><p>Observacoes de outros moradores, nao equivalentes a validacao tecnica.</p><div class="table-scroll"><table><thead><tr><th>Campo</th><th>Tipo</th><th>Restri&ccedil;&atilde;o</th><th>Fun&ccedil;&atilde;o</th></tr></thead><tbody><tr><td><code>id</code></td><td><code>UUID</code></td><td>PK</td><td>Identificador da confirma&ccedil;&atilde;o.</td></tr><tr><td><code>ocorrencia_id</code></td><td><code>UUID</code></td><td>FK, NOT NULL</td><td>Ocorr&ecirc;ncia observada.</td></tr><tr><td><code>usuario_id</code></td><td><code>UUID</code></td><td>FK, NOT NULL</td><td>Morador cadastrado que tamb&eacute;m observou.</td></tr><tr><td><code>criado_em</code></td><td><code>TIMESTAMPTZ</code></td><td>NOT NULL</td><td>Instante da confirma&ccedil;&atilde;o.</td></tr></tbody></table></div></div></details><details class="dict-item" id="t-validacoes_tecnicas"><summary><span class="dict-title"><i style="background:#4D64A8"></i>Validacoes tecnicas</span><span class="dict-meta">6 campos <span class="chev">&#9662;</span></span></summary><div class="dict-inner"><p>Parecer tecnico de agente autenticado.</p><div class="table-scroll"><table><thead><tr><th>Campo</th><th>Tipo</th><th>Restri&ccedil;&atilde;o</th><th>Fun&ccedil;&atilde;o</th></tr></thead><tbody><tr><td><code>id</code></td><td><code>UUID</code></td><td>PK</td><td>Identificador do parecer.</td></tr><tr><td><code>ocorrencia_id</code></td><td><code>UUID</code></td><td>FK, NOT NULL</td><td>Ocorr&ecirc;ncia analisada.</td></tr><tr><td><code>agente_id</code></td><td><code>UUID</code></td><td>FK, NOT NULL</td><td>Profissional autorizado que avaliou.</td></tr><tr><td><code>resultado</code></td><td><code>VARCHAR(18)</code></td><td>NOT NULL</td><td>Confirmada, descartada ou inconclusiva.</td></tr><tr><td><code>observacao</code></td><td><code>TEXT</code></td><td>opcional</td><td>Anota&ccedil;&otilde;es t&eacute;cnicas.</td></tr><tr><td><code>validado_em</code></td><td><code>TIMESTAMPTZ</code></td><td>NOT NULL</td><td>Data e hora da avalia&ccedil;&atilde;o.</td></tr></tbody></table></div></div></details><details class="dict-item" id="t-intervencoes"><summary><span class="dict-title"><i style="background:#4D64A8"></i>Intervencoes</span><span class="dict-meta">8 campos <span class="chev">&#9662;</span></span></summary><div class="dict-inner"><p>Acao executada ou encaminhada pela equipe responsavel.</p><div class="table-scroll"><table><thead><tr><th>Campo</th><th>Tipo</th><th>Restri&ccedil;&atilde;o</th><th>Fun&ccedil;&atilde;o</th></tr></thead><tbody><tr><td><code>id</code></td><td><code>UUID</code></td><td>PK</td><td>Identificador da a&ccedil;&atilde;o.</td></tr><tr><td><code>ocorrencia_id</code></td><td><code>UUID</code></td><td>FK, NOT NULL</td><td>Ocorr&ecirc;ncia atendida.</td></tr><tr><td><code>agente_id</code></td><td><code>UUID</code></td><td>FK, NOT NULL</td><td>Profissional respons&aacute;vel pelo registro.</td></tr><tr><td><code>tipo_acao</code></td><td><code>VARCHAR(90)</code></td><td>NOT NULL</td><td>Visita, orienta&ccedil;&atilde;o, tratamento, encaminhamento etc.</td></tr><tr><td><code>descricao</code></td><td><code>TEXT</code></td><td>NOT NULL</td><td>A&ccedil;&atilde;o executada ou planejada.</td></tr><tr><td><code>situacao</code></td><td><code>VARCHAR(16)</code></td><td>NOT NULL</td><td>Planejada, em execu&ccedil;&atilde;o, conclu&iacute;da ou cancelada.</td></tr><tr><td><code>iniciada_em</code></td><td><code>TIMESTAMPTZ</code></td><td>NOT NULL</td><td>In&iacute;cio da a&ccedil;&atilde;o.</td></tr><tr><td><code>concluida_em</code></td><td><code>TIMESTAMPTZ</code></td><td>opcional</td><td>Encerramento opcional.</td></tr></tbody></table></div></div></details><details class="dict-item" id="t-retornos_comunitarios"><summary><span class="dict-title"><i style="background:#D78127"></i>Retornos</span><span class="dict-meta">6 campos <span class="chev">&#9662;</span></span></summary><div class="dict-inner"><p>Avaliacao do morador sobre a persistencia da situacao.</p><div class="table-scroll"><table><thead><tr><th>Campo</th><th>Tipo</th><th>Restri&ccedil;&atilde;o</th><th>Fun&ccedil;&atilde;o</th></tr></thead><tbody><tr><td><code>id</code></td><td><code>UUID</code></td><td>PK</td><td>Identificador do retorno.</td></tr><tr><td><code>ocorrencia_id</code></td><td><code>UUID</code></td><td>FK, NOT NULL</td><td>Ocorr&ecirc;ncia avaliada.</td></tr><tr><td><code>usuario_id</code></td><td><code>UUID</code></td><td>FK, opcional</td><td>Morador cadastrado ou nulo para acesso por segredo.</td></tr><tr><td><code>percepcao</code></td><td><code>VARCHAR(14)</code></td><td>NOT NULL</td><td>Melhorou, persiste ou n&atilde;o sabe.</td></tr><tr><td><code>comentario</code></td><td><code>TEXT</code></td><td>opcional</td><td>Relato complementar opcional.</td></tr><tr><td><code>informado_em</code></td><td><code>TIMESTAMPTZ</code></td><td>NOT NULL</td><td>Quando o retorno foi enviado.</td></tr></tbody></table></div></div></details><details class="dict-item" id="t-historico_status"><summary><span class="dict-title"><i style="background:#687684"></i>Historico de status</span><span class="dict-meta">7 campos <span class="chev">&#9662;</span></span></summary><div class="dict-inner"><p>Registro cronologico de transicoes, sem sobrescrever o passado.</p><div class="table-scroll"><table><thead><tr><th>Campo</th><th>Tipo</th><th>Restri&ccedil;&atilde;o</th><th>Fun&ccedil;&atilde;o</th></tr></thead><tbody><tr><td><code>id</code></td><td><code>BIGSERIAL</code></td><td>PK</td><td>Sequ&ecirc;ncia para auditoria.</td></tr><tr><td><code>ocorrencia_id</code></td><td><code>UUID</code></td><td>FK, NOT NULL</td><td>Ocorr&ecirc;ncia modificada.</td></tr><tr><td><code>ator_id</code></td><td><code>UUID</code></td><td>FK, opcional</td><td>Usu&aacute;rio respons&aacute;vel; nulo para automa&ccedil;&atilde;o.</td></tr><tr><td><code>status_anterior</code></td><td><code>VARCHAR(24)</code></td><td>opcional</td><td>Estado anterior, quando existente.</td></tr><tr><td><code>novo_status</code></td><td><code>VARCHAR(24)</code></td><td>NOT NULL</td><td>Novo estado aprovado pela regra de neg&oacute;cio.</td></tr><tr><td><code>motivo</code></td><td><code>TEXT</code></td><td>opcional</td><td>Justificativa da altera&ccedil;&atilde;o.</td></tr><tr><td><code>alterado_em</code></td><td><code>TIMESTAMPTZ</code></td><td>NOT NULL</td><td>Instante da mudan&ccedil;a.</td></tr></tbody></table></div></div></details><details class="dict-item" id="t-sugestoes_ia"><summary><span class="dict-title"><i style="background:#7867AB"></i>Sugestoes de IA</span><span class="dict-meta">6 campos <span class="chev">&#9662;</span></span></summary><div class="dict-inner"><p>Classificacao experimental sujeita a revisao humana.</p><div class="table-scroll"><table><thead><tr><th>Campo</th><th>Tipo</th><th>Restri&ccedil;&atilde;o</th><th>Fun&ccedil;&atilde;o</th></tr></thead><tbody><tr><td><code>id</code></td><td><code>UUID</code></td><td>PK</td><td>Identificador da sugest&atilde;o.</td></tr><tr><td><code>ocorrencia_id</code></td><td><code>UUID</code></td><td>FK, NOT NULL</td><td>Ocorr&ecirc;ncia analisada.</td></tr><tr><td><code>categoria_sugerida_id</code></td><td><code>SMALLINT</code></td><td>FK, opcional</td><td>Categoria proposta pela IA, se dispon&iacute;vel.</td></tr><tr><td><code>confianca</code></td><td><code>NUMERIC(4,3)</code></td><td>opcional</td><td>Escore do modelo entre 0 e 1; n&atilde;o &eacute; risco de doen&ccedil;a.</td></tr><tr><td><code>versao_modelo</code></td><td><code>VARCHAR(70)</code></td><td>NOT NULL</td><td>Vers&atilde;o que gerou a sa&iacute;da.</td></tr><tr><td><code>processado_em</code></td><td><code>TIMESTAMPTZ</code></td><td>NOT NULL</td><td>Instante do processamento.</td></tr></tbody></table></div></div></details></div></section>
+<section class="section" id="regras"><div class="section-kicker">04 / Regras de neg&oacute;cio e prote&ccedil;&atilde;o</div><h2>O modelo serve ao uso real da comunidade</h2><div class="grid">
+<div class="note"><h3>Registro simples, com ou sem cadastro</h3><p>O morador envia categoria, relato, ponto e foto opcional. O registro pode ser atribu&iacute;do a um usu&aacute;rio ou enviado sem conta. O acompanhamento exige <strong>protocolo + segredo</strong> enviado uma &uacute;nica vez, cujo hash permanece no servidor.</p></div>
+<div class="note"><h3>Offline sem ocorr&ecirc;ncias duplicadas</h3><p>A PWA cria <code>idempotencia_uuid</code> antes de sincronizar. A API rejeita duplica&ccedil;&atilde;o de efeito e devolve o mesmo protocolo em novas tentativas. Registros e fotos pendentes ficam temporariamente no IndexedDB.</p></div>
+<div class="note"><h3>Valida&ccedil;&atilde;o &eacute; sempre t&eacute;cnica</h3><p><code>confirmacoes_comunitarias</code> indica que outra pessoa tamb&eacute;m observou o fato. Somente um agente autenticado pode criar <code>validacoes_tecnicas</code> ou registrar <code>intervencoes</code>, com permiss&otilde;es verificadas pela API.</p></div>
+<div class="note"><h3>Localiza&ccedil;&atilde;o e imagens privadas</h3><p>O ponto geogr&aacute;fico exato fica protegido em <code>ocorrencias.localizacao</code>. O mapa p&uacute;blico s&oacute; apresenta valores agregados por regi&atilde;o. Fotos permanecem em bucket privado; o banco armazena apenas suas chaves e metadados.</p></div>
+<div class="note"><h3>Hist&oacute;rico audit&aacute;vel</h3><p>A API deve alterar status e criar uma linha em <code>historico_status</code> dentro da <strong>mesma transa&ccedil;&atilde;o</strong>. O registro hist&oacute;rico deve ser aditivo, para permitir contagem de tempo e rastreabilidade da atua&ccedil;&atilde;o.</p></div>
+<div class="note"><h3>IA n&atilde;o decide sozinha</h3><p><code>sugestoes_ia</code> guarda categoria sugerida, confian&ccedil;a e vers&atilde;o do modelo. Um escore de 0,83 &eacute; uma sa&iacute;da probabil&iacute;stica do classificador, <strong>n&atilde;o</strong> um diagn&oacute;stico ou probabilidade de doen&ccedil;a.</p></div>
+</div></section>
+<section class="section"><div class="section-kicker">05 / Exemplo de persist&ecirc;ncia</div><h2>Uma ocorr&ecirc;ncia percorrendo o banco</h2><div class="table-scroll"><table><thead><tr><th>Momento</th><th>Registros envolvidos</th><th>Resultado</th></tr></thead><tbody>
+<tr><td>1. Morador envia</td><td><code>ocorrencias</code> + <code>historico_status</code></td><td>Protocolo e localiza&ccedil;&atilde;o privada, estado inicial &ldquo;recebida&rdquo;.</td></tr>
+<tr><td>2. Anexa foto</td><td><code>evidencias</code></td><td>Chave da imagem em armazenamento privado, sem salvar o bin&aacute;rio no banco.</td></tr>
+<tr><td>3. Outra pessoa observa</td><td><code>confirmacoes_comunitarias</code></td><td>Confirma&ccedil;&atilde;o comunit&aacute;ria, sem substituir vistoria.</td></tr>
+<tr><td>4. Agente examina</td><td><code>validacoes_tecnicas</code> + <code>historico_status</code></td><td>Parecer e atualiza&ccedil;&atilde;o do fluxo t&eacute;cnico.</td></tr>
+<tr><td>5. Equipe age</td><td><code>intervencoes</code> + <code>historico_status</code></td><td>A&ccedil;&atilde;o documentada e pass&iacute;vel de acompanhamento.</td></tr>
+<tr><td>6. Morador retorna</td><td><code>retornos_comunitarios</code></td><td>Percep&ccedil;&atilde;o &ldquo;melhorou / persiste / n&atilde;o sabe&rdquo; para novas an&aacute;lises.</td></tr>
+</tbody></table></div></section>
+<section class="section" id="sql"><div class="section-kicker">06 / Esquema f&iacute;sico</div><h2>SQL inicial para PostgreSQL + PostGIS</h2><p>DDL com tabelas, chaves prim&aacute;rias e estrangeiras, valida&ccedil;&otilde;es, &iacute;ndices geoespaciais e cat&aacute;logo inicial de categorias. O c&oacute;digo &eacute; uma <strong>proposta de projeto</strong>, n&atilde;o uma migra&ccedil;&atilde;o aplicada a um banco existente.</p><div class="sql-header"><span class="pill">11 CREATE TABLE &bull; &iacute;ndice espacial GiST &bull; restri&ccedil;&otilde;es CHECK</span><div class="zoom-tools"><button class="btn" id="copy-sql" type="button">Copiar SQL</button><button class="btn" id="download-sql" type="button">Baixar .sql</button></div></div><pre><code id="sql-source">-- VIGIASAUDE RECIFE | ETAPA 02/06 | ENTREGA 2
+-- PostgreSQL + PostGIS | Proposta de esquema fisico do MVP
+-- Autores: Kristyson Alpino, Pedro Victor Gomes, Leandro Lima
+-- Todas as relacoes e valores abaixo sao PROPOSTOS, nao tabelas existentes da Prefeitura.
+-- Publicacao publica de localizacao: SOMENTE agregados/anomizados via API.
+
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+CREATE EXTENSION IF NOT EXISTS postgis;
+
+-- IDENTIDADES: cadastro opcional do morador, obrigatorio para agentes e gestores.
+-- Autenticacao/senhas e autorizacao ficam fora do esquema: provedor seguro + API.
+CREATE TABLE usuarios (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    nome_exibicao VARCHAR(100) NOT NULL,
+    email VARCHAR(180) UNIQUE,
+    papel VARCHAR(20) NOT NULL DEFAULT &#x27;morador&#x27;
+        CHECK (papel IN (&#x27;morador&#x27;, &#x27;agente&#x27;, &#x27;gestor&#x27;)),
+    criado_em TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE categorias (
+    id SMALLSERIAL PRIMARY KEY,
+    codigo VARCHAR(50) NOT NULL UNIQUE,
+    nome VARCHAR(100) NOT NULL,
+    grupo VARCHAR(24) NOT NULL
+        CHECK (grupo IN (&#x27;vetor&#x27;, &#x27;roedor&#x27;, &#x27;peconhento&#x27;, &#x27;praga_sanitaria&#x27;, &#x27;outro&#x27;)),
+    ativa BOOLEAN NOT NULL DEFAULT TRUE
+);
+
+CREATE TABLE bairros (
+    id SMALLSERIAL PRIMARY KEY,
+    nome VARCHAR(90) NOT NULL UNIQUE
+);
+
+-- Autor ausente = registro sem cadastro; o segredo de acompanhamento nunca e salvo em texto puro.
+-- idempotencia_uuid evita duplicacao em reenvios de formularios offline.
+CREATE TABLE ocorrencias (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    protocolo VARCHAR(24) NOT NULL UNIQUE,
+    idempotencia_uuid UUID NOT NULL UNIQUE,
+    usuario_id UUID REFERENCES usuarios(id) ON DELETE SET NULL,
+    categoria_id SMALLINT NOT NULL REFERENCES categorias(id) ON DELETE RESTRICT,
+    bairro_id SMALLINT REFERENCES bairros(id) ON DELETE SET NULL,
+    descricao TEXT NOT NULL CHECK (length(btrim(descricao)) BETWEEN 10 AND 2000),
+    localizacao GEOGRAPHY(POINT, 4326) NOT NULL,
+    origem_localizacao VARCHAR(10) NOT NULL
+        CHECK (origem_localizacao IN (&#x27;gps&#x27;, &#x27;manual&#x27;)),
+    token_acompanhamento_hash CHAR(64) NOT NULL,
+    observado_em TIMESTAMPTZ,
+    status VARCHAR(24) NOT NULL DEFAULT &#x27;recebida&#x27;
+        CHECK (status IN (&#x27;recebida&#x27;,&#x27;em_triagem&#x27;,&#x27;aguardando_vistoria&#x27;,
+                         &#x27;em_atendimento&#x27;,&#x27;concluida&#x27;,&#x27;descartada&#x27;)),
+    criado_em TIMESTAMPTZ NOT NULL DEFAULT now(),
+    atualizado_em TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- O binario da foto fica em bucket privado; apenas metadados/chave tecnica no SQL.
+CREATE TABLE evidencias (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    ocorrencia_id UUID NOT NULL REFERENCES ocorrencias(id) ON DELETE CASCADE,
+    chave_objeto TEXT NOT NULL UNIQUE,
+    mime VARCHAR(24) NOT NULL CHECK (mime IN (&#x27;image/jpeg&#x27;,&#x27;image/png&#x27;,&#x27;image/webp&#x27;)),
+    tamanho_bytes INTEGER NOT NULL CHECK (tamanho_bytes BETWEEN 1 AND 10485760),
+    enviado_em TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- Confirmacao de observacao; nao equivale a constatacao sanitaria.
+CREATE TABLE confirmacoes_comunitarias (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    ocorrencia_id UUID NOT NULL REFERENCES ocorrencias(id) ON DELETE CASCADE,
+    usuario_id UUID NOT NULL REFERENCES usuarios(id) ON DELETE RESTRICT,
+    criado_em TIMESTAMPTZ NOT NULL DEFAULT now(),
+    UNIQUE (ocorrencia_id, usuario_id)
+);
+
+CREATE TABLE validacoes_tecnicas (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    ocorrencia_id UUID NOT NULL REFERENCES ocorrencias(id) ON DELETE RESTRICT,
+    agente_id UUID NOT NULL REFERENCES usuarios(id) ON DELETE RESTRICT,
+    resultado VARCHAR(18) NOT NULL
+        CHECK (resultado IN (&#x27;confirmada&#x27;,&#x27;descartada&#x27;,&#x27;inconclusiva&#x27;)),
+    observacao TEXT,
+    validado_em TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE intervencoes (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    ocorrencia_id UUID NOT NULL REFERENCES ocorrencias(id) ON DELETE RESTRICT,
+    agente_id UUID NOT NULL REFERENCES usuarios(id) ON DELETE RESTRICT,
+    tipo_acao VARCHAR(90) NOT NULL,
+    descricao TEXT NOT NULL,
+    situacao VARCHAR(16) NOT NULL DEFAULT &#x27;planejada&#x27;
+        CHECK (situacao IN (&#x27;planejada&#x27;,&#x27;em_execucao&#x27;,&#x27;concluida&#x27;,&#x27;cancelada&#x27;)),
+    iniciada_em TIMESTAMPTZ NOT NULL DEFAULT now(),
+    concluida_em TIMESTAMPTZ,
+    CHECK (concluida_em IS NULL OR concluida_em &gt;= iniciada_em)
+);
+
+-- Percepcao apos encaminhamento/intervencao: nao prova ausencia de risco.
+-- Usuario pode ser nulo para resposta autenticada via protocolo + segredo.
+CREATE TABLE retornos_comunitarios (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    ocorrencia_id UUID NOT NULL REFERENCES ocorrencias(id) ON DELETE RESTRICT,
+    usuario_id UUID REFERENCES usuarios(id) ON DELETE SET NULL,
+    percepcao VARCHAR(14) NOT NULL
+        CHECK (percepcao IN (&#x27;melhorou&#x27;,&#x27;persiste&#x27;,&#x27;nao_sabe&#x27;)),
+    comentario TEXT,
+    informado_em TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- Historico append-only administrado pela API; alteracoes exigem auditoria.
+CREATE TABLE historico_status (
+    id BIGSERIAL PRIMARY KEY,
+    ocorrencia_id UUID NOT NULL REFERENCES ocorrencias(id) ON DELETE RESTRICT,
+    ator_id UUID REFERENCES usuarios(id) ON DELETE SET NULL,
+    status_anterior VARCHAR(24),
+    novo_status VARCHAR(24) NOT NULL
+        CHECK (novo_status IN (&#x27;recebida&#x27;,&#x27;em_triagem&#x27;,&#x27;aguardando_vistoria&#x27;,
+                               &#x27;em_atendimento&#x27;,&#x27;concluida&#x27;,&#x27;descartada&#x27;)),
+    motivo TEXT,
+    alterado_em TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- Analise assistida e opcional; categorizacao nao substitui validacao humana.
+CREATE TABLE sugestoes_ia (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    ocorrencia_id UUID NOT NULL REFERENCES ocorrencias(id) ON DELETE CASCADE,
+    categoria_sugerida_id SMALLINT REFERENCES categorias(id) ON DELETE SET NULL,
+    confianca NUMERIC(4,3) CHECK (confianca BETWEEN 0 AND 1),
+    versao_modelo VARCHAR(70) NOT NULL,
+    processado_em TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- Indices para listas do painel e consultas geo-espaciais.
+CREATE INDEX idx_ocorrencias_geo ON ocorrencias USING GIST(localizacao);
+CREATE INDEX idx_ocorrencias_status_data ON ocorrencias(status, criado_em DESC);
+CREATE INDEX idx_ocorrencias_categoria_data ON ocorrencias(categoria_id, criado_em DESC);
+CREATE INDEX idx_ocorrencias_bairro_data ON ocorrencias(bairro_id, criado_em DESC);
+CREATE INDEX idx_evidencias_ocorrencia ON evidencias(ocorrencia_id);
+CREATE INDEX idx_validacoes_ocorrencia ON validacoes_tecnicas(ocorrencia_id, validado_em DESC);
+CREATE INDEX idx_intervencoes_ocorrencia ON intervencoes(ocorrencia_id, iniciada_em DESC);
+CREATE INDEX idx_confirmacoes_ocorrencia ON confirmacoes_comunitarias(ocorrencia_id);
+CREATE INDEX idx_retornos_ocorrencia ON retornos_comunitarios(ocorrencia_id, informado_em DESC);
+CREATE INDEX idx_status_ocorrencia ON historico_status(ocorrencia_id, alterado_em DESC);
+CREATE INDEX idx_sugestoes_ocorrencia ON sugestoes_ia(ocorrencia_id, processado_em DESC);
+
+-- Exemplos de categorias do catalogo inicial (expansivel pela gestao).
+INSERT INTO categorias (codigo, nome, grupo) VALUES
+ (&#x27;aedes_criadouro&#x27;, &#x27;Possivel criadouro do Aedes&#x27;, &#x27;vetor&#x27;),
+ (&#x27;roedores&#x27;, &#x27;Presenca recorrente de roedores&#x27;, &#x27;roedor&#x27;),
+ (&#x27;escorpioes&#x27;, &#x27;Escorpioes&#x27;, &#x27;peconhento&#x27;),
+ (&#x27;serpentes&#x27;, &#x27;Serpentes&#x27;, &#x27;peconhento&#x27;),
+ (&#x27;infestacao_sanitaria&#x27;, &#x27;Infestacao sanitaria&#x27;, &#x27;praga_sanitaria&#x27;),
+ (&#x27;nao_identificado&#x27;, &#x27;Nao identificado&#x27;, &#x27;outro&#x27;)
+ON CONFLICT (codigo) DO NOTHING;
+
+-- Regras que dependem da camada de servicos:
+-- 1. Ao criar ocorrencia, gerar protocolo/segredo, hash e historico em uma transacao.
+-- 2. Conferir papel de agente/gestor para validacoes e intervencoes (autorizacao na API).
+-- 3. Conceder retorno anonimo somente com protocolo + token seguro; limitar tentativas.
+-- 4. Manter atualizado_em, verificar transicoes de status e gravar historico atomico.
+-- 5. Nao disponibilizar coordenadas exatas ou chaves de imagens na API publica.
+-- 6. Politica de retencao, base legal, direitos dos titulares e auditoria antes da producao.
+</code></pre></section>
+<section class="section"><div class="section-kicker">07 / Crit&eacute;rios de qualidade</div><h2>Valida&ccedil;&atilde;o antes da implementa&ccedil;&atilde;o</h2><ul class="list"><li><strong>Integridade:</strong> FKs v&aacute;lidas, categorias existentes, uma confirma&ccedil;&atilde;o por morador e chaves de sincroniza&ccedil;&atilde;o &uacute;nicas.</li><li><strong>Acesso:</strong> usu&aacute;rios comuns n&atilde;o criam valida&ccedil;&otilde;es ou interven&ccedil;&otilde;es; autoriza&ccedil;&atilde;o no back-end.</li><li><strong>Privacidade:</strong> segredos e pontos precisos nunca aparecem em listagens abertas.</li><li><strong>Qualidade operacional:</strong> transi&ccedil;&otilde;es de status documentadas; contagem de tempo calcul&aacute;vel pelo hist&oacute;rico.</li><li><strong>Revis&atilde;o necess&aacute;ria:</strong> base legal LGPD, reten&ccedil;&atilde;o, padr&atilde;o de autentica&ccedil;&atilde;o e pol&iacute;tica de modera&ccedil;&atilde;o dependem de valida&ccedil;&atilde;o institucional antes de produ&ccedil;&atilde;o.</li></ul><p class="hint">Pr&oacute;xima entrega, ap&oacute;s sua avalia&ccedil;&atilde;o: contratos de API REST baseados neste esquema. Ainda n&atilde;o h&aacute; servi&ccedil;os reais conectados &agrave; Prefeitura, EMPREL ou UNICAP.</p></section>
+</main><footer><strong>VigiaSa&uacute;de Recife &middot; Modelagem de dados &middot; Entrega 2</strong><span>Kristyson Alpino &bull; Pedro Victor Gomes &bull; Leandro Lima</span></footer></div>
+<script>
+(function(){
+ const box=document.getElementById('erd-graphic');const inner=document.getElementById('erd-inner');
+ let level=1500;function apply(){inner.style.width=level+'px';document.getElementById('zoom-label').textContent=Math.round(level/15)+'%';}
+ document.getElementById('zoom-in').addEventListener('click',()=>{level=Math.min(2600,level+250);apply()});
+ document.getElementById('zoom-out').addEventListener('click',()=>{level=Math.max(850,level-250);apply()});
+ document.getElementById('zoom-reset').addEventListener('click',()=>{level=1500;apply();box.scrollLeft=0});
+ document.getElementById('open-all').addEventListener('click',()=>document.querySelectorAll('details.dict-item').forEach(x=>x.open=true));
+ document.getElementById('close-all').addEventListener('click',()=>document.querySelectorAll('details.dict-item').forEach(x=>x.open=false));
+ document.getElementById('download-sql').addEventListener('click',()=>{
+   const source=document.getElementById('sql-source').textContent;
+   const blob=new Blob([source],{type:'text/plain;charset=utf-8'});
+   const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='VigiaSaude_Modelo_Dados.sql';
+   document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+ });
+ document.getElementById('copy-sql').addEventListener('click',async()=>{
+   const btn=document.getElementById('copy-sql');try{await navigator.clipboard.writeText(document.getElementById('sql-source').textContent);btn.textContent='Copiado';}
+   catch(e){btn.textContent='Selecione o c\u00f3digo abaixo para copiar';}
+   setTimeout(()=>btn.textContent='Copiar SQL',2500);
+ });
+ apply();
+})();
+</script></body></html>

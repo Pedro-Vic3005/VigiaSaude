@@ -1,0 +1,1717 @@
+openapi: 3.0.3
+info:
+  title: VigiaSaúde Recife — API REST do Piloto
+  version: 1.0.0-proposta
+  description: '**Contrato técnico proposto**, não serviço implementado. Baseado na arquitetura da Entrega
+    1 e no esquema SQL da Entrega 2. Todas as amostras são fictícias. URLs públicas omitem GPS preciso
+    e evidências privadas.'
+servers:
+- url: https://api.exemplo.invalid/v1
+  description: Endereço de exemplo, não hospedado
+tags:
+- name: Catálogos
+  description: Categorias e bairros
+- name: Comunidade
+  description: Criar e acompanhar relatos
+- name: Público agregado
+  description: Mapa público com privacidade
+- name: Vigilância
+  description: Operações restritas de agentes/gestores
+paths:
+  /catalogos/categorias:
+    get:
+      tags:
+      - Catálogos
+      summary: Listar categorias ativas
+      description: Lista o catálogo público de categorias. Usa id numérico do banco na criação de relatos.
+      operationId: listarCategorias
+      responses:
+        '200':
+          description: Categorias ativas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Categoria'
+              example:
+              - id: 1
+                codigo: aedes_criadouro
+                nome: Possível criadouro do Aedes
+                grupo: vetor
+              - id: 3
+                codigo: escorpioes
+                nome: Escorpiões
+                grupo: peconhento
+        '500':
+          description: Erro interno
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: &id001
+                erro: DADOS_INVALIDOS
+                mensagem: A descrição deve conter pelo menos 10 caracteres.
+                requisicao_id: c1798a2e-9d70-4a23-80d1-89ade0795a4f
+                detalhes:
+                  campo: descricao
+        '429':
+          description: Limite de tentativas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+      security: []
+  /catalogos/bairros:
+    get:
+      tags:
+      - Catálogos
+      summary: Listar bairros cadastrados
+      description: Lista IDs/nome de bairros do catálogo. O bairro não substitui as coordenadas precisas
+        do registro.
+      operationId: listarBairros
+      responses:
+        '200':
+          description: Bairros cadastrados
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Bairro'
+              example:
+              - id: 12
+                nome: Bairro ilustrativo
+        '500':
+          description: Erro interno
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '429':
+          description: Limite de tentativas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+      security: []
+  /ocorrencias:
+    post:
+      tags:
+      - Comunidade
+      summary: Criar ocorrência (também offline)
+      description: Cria relato anonimamente ou vinculado ao morador autenticado. Gerar e armazenar idempotencia_uuid
+        e segredo_acompanhamento no cliente ANTES do primeiro envio; repetir ambos em retentativas. O
+        back-end gera protocolo, hash e histórico na mesma transação.
+      operationId: criarOcorrencia
+      responses:
+        '201':
+          description: Criada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OcorrenciaCriada'
+              example:
+                id: d5da5093-b697-4a48-9c67-a7cf91b1a312
+                protocolo: VSR-2026-004281
+                status: recebida
+                criado_em: '2026-10-17T17:22:31Z'
+                reenvio: false
+        '200':
+          description: Reenvio idempotente do mesmo relato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OcorrenciaCriada'
+              example:
+                id: d5da5093-b697-4a48-9c67-a7cf91b1a312
+                protocolo: VSR-2026-004281
+                status: recebida
+                criado_em: '2026-10-17T17:22:31Z'
+                reenvio: true
+        '400':
+          description: Requisição inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '409':
+          description: Conflito de estado ou idempotência
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '422':
+          description: Campos semanticamente inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '429':
+          description: Limite de tentativas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '500':
+          description: Erro interno
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CriarOcorrencia'
+            example:
+              idempotencia_uuid: 8a812b1a-0f02-4a61-b516-a6383041f01a
+              segredo_acompanhamento: XaBdCQ-vmo7INQiCMVtRwDK6ImYoECWthqxxHPrEkSE
+              categoria_id: 3
+              bairro_id: 12
+              descricao: Escorpião observado próximo à área externa de uma residência.
+              localizacao: &id002
+                latitude: -8.0476
+                longitude: -34.8769
+              origem_localizacao: gps
+              observado_em: '2026-10-17T14:20:00-03:00'
+  /ocorrencias/protocolo/{protocolo}:
+    get:
+      tags:
+      - Comunidade
+      summary: Consultar acompanhamento por protocolo
+      description: Acesso autenticado pelo segredo de acompanhamento ou por titular autorizado. Retorna
+        somente campos publicáveis e histórico sanitizado. Não entrega endereço exato ou identificadores
+        de terceiros.
+      operationId: consultarProtocolo
+      responses:
+        '200':
+          description: Acompanhamento redigido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Acompanhamento'
+              example:
+                protocolo: VSR-2026-004281
+                categoria: Escorpiões
+                status: aguardando_vistoria
+                criado_em: '2026-10-17T17:22:31Z'
+                linha_tempo:
+                - status: recebida
+                  alterado_em: '2026-10-17T17:22:31Z'
+                  descricao_curta: Registro recebido
+                - status: em_triagem
+                  alterado_em: '2026-10-17T18:10:00Z'
+                  descricao_curta: Em análise
+                - status: aguardando_vistoria
+                  alterado_em: '2026-10-17T19:00:00Z'
+                  descricao_curta: Encaminhado para vistoria
+        '401':
+          description: Não autenticado / token ausente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '404':
+          description: Recurso inexistente ou inacessível
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '429':
+          description: Limite de tentativas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '500':
+          description: Erro interno
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+      parameters:
+      - name: protocolo
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - TrackerSecret: []
+      - BearerAuth: []
+  /ocorrencias/{ocorrenciaId}/evidencias:
+    post:
+      tags:
+      - Comunidade
+      summary: Anexar fotografia privada
+      description: 'Upload multipart com 1 imagem: JPEG, PNG ou WebP de até 10 MiB. Só autor autorizado
+        ou portador de segredo pode anexar. Remove metadados EXIF/GPS antes de guardar e mantém chave_objeto
+        fora de respostas públicas.'
+      operationId: anexarEvidencia
+      responses:
+        '201':
+          description: Evidência armazenada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Evidencia'
+              example:
+                id: 2057cbf6-9e5b-4f7f-b7c3-e84589eec2ea
+                mime: image/jpeg
+                tamanho_bytes: 425183
+                enviado_em: '2026-10-17T17:25:00Z'
+        '400':
+          description: Requisição inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '401':
+          description: Não autenticado / token ausente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '403':
+          description: Sem permissão
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '404':
+          description: Recurso inexistente ou inacessível
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '413':
+          description: Arquivo maior que o limite
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '415':
+          description: Tipo de arquivo não aceito
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '429':
+          description: Limite de tentativas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '500':
+          description: Erro interno
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+      parameters:
+      - name: ocorrenciaId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      security:
+      - TrackerSecret: []
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+              - arquivo
+              properties:
+                arquivo:
+                  type: string
+                  format: binary
+  /ocorrencias/{ocorrenciaId}/confirmacoes:
+    post:
+      tags:
+      - Comunidade
+      summary: Confirmar observação comunitária
+      description: Um morador autenticado pode declarar que observou situação semelhante. A confirmação
+        NÃO é validação técnica nem prova sanitária. UNIQUE (ocorrencia_id,usuario_id) impede duas confirmações.
+      operationId: confirmarObservacao
+      responses:
+        '201':
+          description: Confirmada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Confirmacao'
+              example:
+                id: 2057cbf6-9e5b-4f7f-b7c3-e84589eec2ea
+                ocorrencia_id: d5da5093-b697-4a48-9c67-a7cf91b1a312
+                criado_em: '2026-10-17T18:00:00Z'
+        '401':
+          description: Não autenticado / token ausente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '403':
+          description: Sem permissão
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '404':
+          description: Recurso inexistente ou inacessível
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '409':
+          description: Conflito de estado ou idempotência
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '429':
+          description: Limite de tentativas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '500':
+          description: Erro interno
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+      parameters:
+      - name: ocorrenciaId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      security:
+      - BearerAuth: []
+  /ocorrencias/protocolo/{protocolo}/retornos:
+    post:
+      tags:
+      - Comunidade
+      summary: Informar resultado percebido
+      description: Permite ao titular relatar se a situação melhorou, persiste ou é desconhecida. O retorno
+        não substitui nova inspeção e não altera automaticamente o status sanitário.
+      operationId: registrarRetorno
+      responses:
+        '201':
+          description: Retorno recebido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Retorno'
+              example:
+                id: 2057cbf6-9e5b-4f7f-b7c3-e84589eec2ea
+                percepcao: persiste
+                informado_em: '2026-10-20T20:00:00Z'
+        '400':
+          description: Requisição inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '401':
+          description: Não autenticado / token ausente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '404':
+          description: Recurso inexistente ou inacessível
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '429':
+          description: Limite de tentativas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '500':
+          description: Erro interno
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+      parameters:
+      - name: protocolo
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - TrackerSecret: []
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RetornoNovo'
+            example:
+              percepcao: persiste
+              comentario: O problema ainda aparece à noite.
+  /areas/resumo:
+    get:
+      tags:
+      - Público agregado
+      summary: Consultar mapa agregado (sem GPS individual)
+      description: Apresenta apenas contagens por bairro, categoria e mês após aplicar limiar de agregação
+        de pelo menos cinco relatos e revisão de privacidade. Não devolve pins ou fotografias privadas.
+      operationId: consultarMapaAgregado
+      responses:
+        '200':
+          description: Contagens agregadas
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - items
+                - nota
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AreaAgregada'
+                  nota:
+                    type: string
+              example:
+                items:
+                - bairro_id: 12
+                  bairro: Bairro ilustrativo
+                  categoria: escorpioes
+                  periodo: 2026-10
+                  total_registros: 7
+                nota: Somente regiões que passam no limiar mínimo de agregação são apresentadas.
+        '400':
+          description: Requisição inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '422':
+          description: Campos semanticamente inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '429':
+          description: Limite de tentativas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '500':
+          description: Erro interno
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+      parameters:
+      - name: periodo
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: categoria
+        in: query
+        required: false
+        schema:
+          type: string
+      security: []
+  /gestao/ocorrencias:
+    get:
+      tags:
+      - Vigilância
+      summary: Listar ocorrências para triagem
+      description: Área restrita a agente/gestor. Filtragem por status, categoria, bairro e paginação;
+        localizações exatas são dados internos. Paginação com parâmetros pagina/limite.
+      operationId: listarOcorrenciasGestao
+      responses:
+        '200':
+          description: Lista paginada
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - items
+                - pagina
+                - limite
+                - total
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/OcorrenciaGestao'
+                  pagina:
+                    type: integer
+                  limite:
+                    type: integer
+                  total:
+                    type: integer
+              example:
+                items:
+                - &id003
+                  id: d5da5093-b697-4a48-9c67-a7cf91b1a312
+                  protocolo: VSR-2026-004281
+                  categoria_id: 3
+                  bairro_id: 12
+                  descricao: Escorpião observado próximo à área externa de uma residência.
+                  localizacao: *id002
+                  origem_localizacao: gps
+                  status: aguardando_vistoria
+                  criado_em: '2026-10-17T17:22:31Z'
+                  atualizado_em: '2026-10-17T19:00:00Z'
+                  total_confirmacoes: 2
+                  total_evidencias: 1
+                pagina: 1
+                limite: 20
+                total: 1
+        '400':
+          description: Requisição inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '401':
+          description: Não autenticado / token ausente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '403':
+          description: Sem permissão
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '429':
+          description: Limite de tentativas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '500':
+          description: Erro interno
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: &id004
+          - recebida
+          - em_triagem
+          - aguardando_vistoria
+          - em_atendimento
+          - concluida
+          - descartada
+      - name: categoria_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: bairro_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: pagina
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: limite
+        in: query
+        required: false
+        schema:
+          type: integer
+      security:
+      - BearerAuth: []
+  /gestao/ocorrencias/{ocorrenciaId}:
+    get:
+      tags:
+      - Vigilância
+      summary: Consultar ocorrência para análise técnica
+      description: Detalhe restrito com localização exata, categoria, descrição e totais de evidências
+        e confirmações. O acesso deve ser auditado.
+      operationId: obterOcorrenciaGestao
+      responses:
+        '200':
+          description: Ocorrência restrita
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OcorrenciaGestao'
+              example: *id003
+        '401':
+          description: Não autenticado / token ausente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '403':
+          description: Sem permissão
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '404':
+          description: Recurso inexistente ou inacessível
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '429':
+          description: Limite de tentativas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '500':
+          description: Erro interno
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+      parameters:
+      - name: ocorrenciaId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      security:
+      - BearerAuth: []
+  /gestao/ocorrencias/{ocorrenciaId}/validacoes:
+    post:
+      tags:
+      - Vigilância
+      summary: Registrar validação técnica
+      description: 'Agente/gestor registra inspeção técnica: confirmada, descartada ou inconclusiva. agente_id
+        e validado_em vêm da autenticação/servidor. Regras de status são executadas em transação com histórico.'
+      operationId: registrarValidacaoTecnica
+      responses:
+        '201':
+          description: Validação registrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Validacao'
+              example:
+                id: 2057cbf6-9e5b-4f7f-b7c3-e84589eec2ea
+                ocorrencia_id: d5da5093-b697-4a48-9c67-a7cf91b1a312
+                resultado: confirmada
+                observacao: Presença verificada em vistoria; orientação preventiva registrada.
+                validado_em: '2026-10-18T12:00:00Z'
+        '400':
+          description: Requisição inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '401':
+          description: Não autenticado / token ausente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '403':
+          description: Sem permissão
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '404':
+          description: Recurso inexistente ou inacessível
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '409':
+          description: Conflito de estado ou idempotência
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '422':
+          description: Campos semanticamente inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '500':
+          description: Erro interno
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+      parameters:
+      - name: ocorrenciaId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ValidacaoNova'
+            example:
+              resultado: confirmada
+              observacao: Presença verificada em vistoria; orientação preventiva registrada.
+  /gestao/ocorrencias/{ocorrenciaId}/intervencoes:
+    post:
+      tags:
+      - Vigilância
+      summary: Criar intervenção/encaminhamento
+      description: Registra ação de campo relacionada ao relato; agente_id é obtido do bearer token. Pode
+        ser planejamento ou orientação, sem prometer resolução automática.
+      operationId: criarIntervencao
+      responses:
+        '201':
+          description: Intervenção registrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Intervencao'
+              example:
+                id: 2057cbf6-9e5b-4f7f-b7c3-e84589eec2ea
+                ocorrencia_id: d5da5093-b697-4a48-9c67-a7cf91b1a312
+                tipo_acao: orientacao_preventiva
+                descricao: Orientação aos moradores e encaminhamento para avaliação do entorno.
+                situacao: planejada
+                iniciada_em: '2026-10-18T12:15:00Z'
+                concluida_em: null
+        '400':
+          description: Requisição inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '401':
+          description: Não autenticado / token ausente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '403':
+          description: Sem permissão
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '404':
+          description: Recurso inexistente ou inacessível
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '409':
+          description: Conflito de estado ou idempotência
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '422':
+          description: Campos semanticamente inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '500':
+          description: Erro interno
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+      parameters:
+      - name: ocorrenciaId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IntervencaoNova'
+            example:
+              tipo_acao: orientacao_preventiva
+              descricao: Orientação aos moradores e encaminhamento para avaliação do entorno.
+  /gestao/intervencoes/{intervencaoId}:
+    patch:
+      tags:
+      - Vigilância
+      summary: Atualizar execução de intervenção
+      description: Atualiza situação planejada/em execução/concluída/cancelada. Em concluída, concluida_em
+        é marcado pelo servidor. Não aceita novas categorias de estado fora do banco.
+      operationId: atualizarIntervencao
+      responses:
+        '200':
+          description: Intervenção atualizada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Intervencao'
+              example:
+                id: 2057cbf6-9e5b-4f7f-b7c3-e84589eec2ea
+                ocorrencia_id: d5da5093-b697-4a48-9c67-a7cf91b1a312
+                tipo_acao: orientacao_preventiva
+                descricao: Orientação aos moradores e encaminhamento para avaliação do entorno.
+                situacao: concluida
+                iniciada_em: '2026-10-18T12:15:00Z'
+                concluida_em: '2026-10-19T12:40:00Z'
+        '400':
+          description: Requisição inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '401':
+          description: Não autenticado / token ausente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '403':
+          description: Sem permissão
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '404':
+          description: Recurso inexistente ou inacessível
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '409':
+          description: Conflito de estado ou idempotência
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '422':
+          description: Campos semanticamente inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '500':
+          description: Erro interno
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+      parameters:
+      - name: intervencaoId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AtualizarIntervencao'
+            example:
+              situacao: concluida
+  /gestao/ocorrencias/{ocorrenciaId}/status:
+    patch:
+      tags:
+      - Vigilância
+      summary: Atualizar status da ocorrência
+      description: Altera status somente após validar regras de transição. Atualiza ocorrencias.status,
+        ocorrencias.atualizado_em e insere historico_status na mesma transação.
+      operationId: alterarStatus
+      responses:
+        '200':
+          description: Status alterado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventoPublico'
+              example:
+                status: aguardando_vistoria
+                alterado_em: '2026-10-17T19:00:00Z'
+                descricao_curta: Encaminhado para vistoria
+        '400':
+          description: Requisição inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '401':
+          description: Não autenticado / token ausente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '403':
+          description: Sem permissão
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '404':
+          description: Recurso inexistente ou inacessível
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '409':
+          description: Conflito de estado ou idempotência
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '422':
+          description: Campos semanticamente inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '500':
+          description: Erro interno
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+      parameters:
+      - name: ocorrenciaId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MudancaStatus'
+            example:
+              status: aguardando_vistoria
+              motivo: Prioridade confirmada na triagem.
+  /gestao/indicadores:
+    get:
+      tags:
+      - Vigilância
+      summary: Indicadores do piloto
+      description: Indicadores derivados de SQL; não existe tabela separada. Mede tempo de validação,
+        número de relatos e encaminhamentos por período.
+      operationId: consultarIndicadores
+      responses:
+        '200':
+          description: Indicadores calculados
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Indicadores'
+              example:
+                periodo_inicio: '2026-10-01'
+                periodo_fim: '2026-10-31'
+                total_ocorrencias: 102
+                total_validadas: 53
+                total_com_encaminhamento: 41
+                tempo_medio_horas_ate_validacao: 30.5
+        '400':
+          description: Requisição inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '401':
+          description: Não autenticado / token ausente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '403':
+          description: Sem permissão
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '422':
+          description: Campos semanticamente inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '500':
+          description: Erro interno
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+      parameters:
+      - name: inicio
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: fim
+        in: query
+        required: true
+        schema:
+          type: string
+      security:
+      - BearerAuth: []
+  /gestao/ocorrencias/{ocorrenciaId}/evidencias/{evidenciaId}/acesso:
+    get:
+      tags:
+      - Vigilância
+      summary: Obter acesso temporário à foto
+      description: Retorna URL assinada com validade curta para arquivo privado. Nunca envia chave_objeto
+        do banco nem torna o bucket público.
+      operationId: obterFotoAutorizada
+      responses:
+        '200':
+          description: Acesso de curta duração
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcessoArquivo'
+              example:
+                url_temporaria: https://arquivos.exemplo.invalid/arquivo-assinado?assinatura=exemplo
+                expira_em: '2026-10-17T19:05:00Z'
+        '401':
+          description: Não autenticado / token ausente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '403':
+          description: Sem permissão
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '404':
+          description: Recurso inexistente ou inacessível
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '429':
+          description: Limite de tentativas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+        '500':
+          description: Erro interno
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: *id001
+      parameters:
+      - name: ocorrenciaId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: evidenciaId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      security:
+      - BearerAuth: []
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Token de sessão de agente/gestor ou morador identificado. Provedor de identidade externo.
+    TrackerSecret:
+      type: apiKey
+      in: header
+      name: X-Acompanhamento-Token
+      description: Segredo de 32 bytes gerado no cliente, apresentado em base64url (43 caracteres) para
+        consultar/alterar seu próprio relato. Nunca enviar na URL.
+  schemas:
+    Error:
+      type: object
+      additionalProperties: false
+      required:
+      - erro
+      - mensagem
+      - requisicao_id
+      properties:
+        erro:
+          type: string
+        mensagem:
+          type: string
+        requisicao_id:
+          type: string
+          format: uuid
+        detalhes:
+          type: object
+          additionalProperties: true
+    Categoria:
+      type: object
+      required:
+      - id
+      - codigo
+      - nome
+      - grupo
+      properties:
+        id:
+          type: integer
+        codigo:
+          type: string
+        nome:
+          type: string
+        grupo:
+          type: string
+          enum:
+          - vetor
+          - roedor
+          - peconhento
+          - praga_sanitaria
+          - outro
+    Bairro:
+      type: object
+      required:
+      - id
+      - nome
+      properties:
+        id:
+          type: integer
+        nome:
+          type: string
+    Localizacao:
+      type: object
+      additionalProperties: false
+      required:
+      - latitude
+      - longitude
+      properties:
+        latitude:
+          type: number
+          minimum: -90
+          maximum: 90
+        longitude:
+          type: number
+          minimum: -180
+          maximum: 180
+    CriarOcorrencia:
+      type: object
+      additionalProperties: false
+      required:
+      - idempotencia_uuid
+      - segredo_acompanhamento
+      - categoria_id
+      - descricao
+      - localizacao
+      - origem_localizacao
+      properties:
+        idempotencia_uuid:
+          type: string
+          format: uuid
+          description: UUID persistido no aparelho durante a fila offline; reenvios usam o mesmo valor.
+        segredo_acompanhamento:
+          type: string
+          minLength: 43
+          maxLength: 43
+          pattern: ^[A-Za-z0-9_-]{43}$
+          writeOnly: true
+          description: 43 caracteres base64url (32 bytes aleatórios criados pelo cliente); API guarda
+            somente hash SHA-256.
+        categoria_id:
+          type: integer
+          minimum: 1
+        bairro_id:
+          type: integer
+          minimum: 1
+          nullable: true
+        descricao:
+          type: string
+          minLength: 10
+          maxLength: 2000
+        localizacao:
+          $ref: '#/components/schemas/Localizacao'
+        origem_localizacao:
+          type: string
+          enum:
+          - gps
+          - manual
+        observado_em:
+          type: string
+          format: date-time
+          nullable: true
+    OcorrenciaCriada:
+      type: object
+      required:
+      - id
+      - protocolo
+      - status
+      - criado_em
+      properties:
+        id:
+          type: string
+          format: uuid
+        protocolo:
+          type: string
+          maxLength: 24
+        status:
+          type: string
+          enum: *id004
+        criado_em:
+          type: string
+          format: date-time
+        reenvio:
+          type: boolean
+          description: true se um envio idempotente retornou uma ocorrência previamente aceita.
+    EventoPublico:
+      type: object
+      required:
+      - status
+      - alterado_em
+      properties:
+        status:
+          type: string
+          enum: *id004
+        alterado_em:
+          type: string
+          format: date-time
+        descricao_curta:
+          type: string
+    Acompanhamento:
+      type: object
+      required:
+      - protocolo
+      - categoria
+      - status
+      - criado_em
+      - linha_tempo
+      properties:
+        protocolo:
+          type: string
+        categoria:
+          type: string
+        status:
+          type: string
+          enum: *id004
+        criado_em:
+          type: string
+          format: date-time
+        linha_tempo:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventoPublico'
+        ultima_orientacao_publicavel:
+          type: string
+          nullable: true
+    Evidencia:
+      type: object
+      required:
+      - id
+      - mime
+      - tamanho_bytes
+      - enviado_em
+      properties:
+        id:
+          type: string
+          format: uuid
+        mime:
+          type: string
+          enum:
+          - image/jpeg
+          - image/png
+          - image/webp
+        tamanho_bytes:
+          type: integer
+          minimum: 1
+          maximum: 10485760
+        enviado_em:
+          type: string
+          format: date-time
+    Confirmacao:
+      type: object
+      required:
+      - id
+      - ocorrencia_id
+      - criado_em
+      properties:
+        id:
+          type: string
+          format: uuid
+        ocorrencia_id:
+          type: string
+          format: uuid
+        criado_em:
+          type: string
+          format: date-time
+    RetornoNovo:
+      type: object
+      additionalProperties: false
+      required:
+      - percepcao
+      properties:
+        percepcao:
+          type: string
+          enum: &id005
+          - melhorou
+          - persiste
+          - nao_sabe
+        comentario:
+          type: string
+          maxLength: 2000
+          nullable: true
+    Retorno:
+      type: object
+      required:
+      - id
+      - percepcao
+      - informado_em
+      properties:
+        id:
+          type: string
+          format: uuid
+        percepcao:
+          type: string
+          enum: *id005
+        informado_em:
+          type: string
+          format: date-time
+    AreaAgregada:
+      type: object
+      required:
+      - bairro_id
+      - bairro
+      - categoria
+      - periodo
+      - total_registros
+      properties:
+        bairro_id:
+          type: integer
+        bairro:
+          type: string
+        categoria:
+          type: string
+        periodo:
+          type: string
+          pattern: ^\d{4}-\d{2}$
+        total_registros:
+          type: integer
+          minimum: 5
+    OcorrenciaGestao:
+      type: object
+      required:
+      - id
+      - protocolo
+      - categoria_id
+      - descricao
+      - localizacao
+      - origem_localizacao
+      - status
+      - criado_em
+      properties:
+        id:
+          type: string
+          format: uuid
+        protocolo:
+          type: string
+        categoria_id:
+          type: integer
+        bairro_id:
+          type: integer
+          nullable: true
+        descricao:
+          type: string
+        localizacao:
+          $ref: '#/components/schemas/Localizacao'
+        origem_localizacao:
+          type: string
+          enum:
+          - gps
+          - manual
+        status:
+          type: string
+          enum: *id004
+        criado_em:
+          type: string
+          format: date-time
+        atualizado_em:
+          type: string
+          format: date-time
+        total_confirmacoes:
+          type: integer
+          minimum: 0
+        total_evidencias:
+          type: integer
+          minimum: 0
+    ValidacaoNova:
+      type: object
+      additionalProperties: false
+      required:
+      - resultado
+      properties:
+        resultado:
+          type: string
+          enum: &id006
+          - confirmada
+          - descartada
+          - inconclusiva
+        observacao:
+          type: string
+          maxLength: 2000
+          nullable: true
+    Validacao:
+      type: object
+      required:
+      - id
+      - ocorrencia_id
+      - resultado
+      - validado_em
+      properties:
+        id:
+          type: string
+          format: uuid
+        ocorrencia_id:
+          type: string
+          format: uuid
+        resultado:
+          type: string
+          enum: *id006
+        observacao:
+          type: string
+          nullable: true
+        validado_em:
+          type: string
+          format: date-time
+    IntervencaoNova:
+      type: object
+      additionalProperties: false
+      required:
+      - tipo_acao
+      - descricao
+      properties:
+        tipo_acao:
+          type: string
+          minLength: 2
+          maxLength: 90
+        descricao:
+          type: string
+          minLength: 10
+          maxLength: 2000
+    Intervencao:
+      type: object
+      required:
+      - id
+      - ocorrencia_id
+      - tipo_acao
+      - situacao
+      - iniciada_em
+      properties:
+        id:
+          type: string
+          format: uuid
+        ocorrencia_id:
+          type: string
+          format: uuid
+        tipo_acao:
+          type: string
+        descricao:
+          type: string
+        situacao:
+          type: string
+          enum:
+          - planejada
+          - em_execucao
+          - concluida
+          - cancelada
+        iniciada_em:
+          type: string
+          format: date-time
+        concluida_em:
+          type: string
+          format: date-time
+          nullable: true
+    AtualizarIntervencao:
+      type: object
+      additionalProperties: false
+      required:
+      - situacao
+      properties:
+        situacao:
+          type: string
+          enum:
+          - em_execucao
+          - concluida
+          - cancelada
+    MudancaStatus:
+      type: object
+      additionalProperties: false
+      required:
+      - status
+      - motivo
+      properties:
+        status:
+          type: string
+          enum: *id004
+        motivo:
+          type: string
+          minLength: 5
+          maxLength: 2000
+    Indicadores:
+      type: object
+      required:
+      - periodo_inicio
+      - periodo_fim
+      - total_ocorrencias
+      - total_validadas
+      - total_com_encaminhamento
+      - tempo_medio_horas_ate_validacao
+      properties:
+        periodo_inicio:
+          type: string
+          format: date
+        periodo_fim:
+          type: string
+          format: date
+        total_ocorrencias:
+          type: integer
+        total_validadas:
+          type: integer
+        total_com_encaminhamento:
+          type: integer
+        tempo_medio_horas_ate_validacao:
+          type: number
+          nullable: true
+    AcessoArquivo:
+      type: object
+      required:
+      - url_temporaria
+      - expira_em
+      properties:
+        url_temporaria:
+          type: string
+          format: uri
+          description: URL assinada com expiração curta; só entregue a usuários autorizados.
+        expira_em:
+          type: string
+          format: date-time
+security: []

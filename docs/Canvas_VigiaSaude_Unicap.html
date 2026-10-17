@@ -1,0 +1,827 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VigiaSaúde Recife — One-Page Canvas</title>
+<style>
+:root{
+  --navy:#071a4c;
+  --blue:#0d4ea0;
+  --cyan:#00a5ba;
+  --teal:#0a7b74;
+  --red:#b3123c;
+  --magenta:#d81c4f;
+  --orange:#f28c22;
+  --green:#2a8b4d;
+  --purple:#6652a3;
+  --ink:#17233f;
+  --muted:#626d83;
+  --paper:#f6f8fc;
+  --line:#dfe5ef;
+  --white:#fff;
+  --shadow:0 18px 48px rgba(7,26,76,.10);
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(circle at 6% 7%,rgba(0,165,186,.10),transparent 25rem),
+    radial-gradient(circle at 95% 4%,rgba(216,28,79,.09),transparent 23rem),
+    linear-gradient(180deg,#fbfcfe 0%,#f3f6fa 100%);
+}
+
+.page{
+  width:min(1580px,calc(100% - 32px));
+  margin:20px auto 42px;
+  background:rgba(255,255,255,.97);
+  border:1px solid rgba(7,26,76,.08);
+  border-radius:34px;
+  box-shadow:var(--shadow);
+  overflow:hidden;
+  position:relative;
+}
+
+.top-accent{
+  height:8px;
+  background:linear-gradient(90deg,var(--navy) 0 24%,var(--red) 24% 43%,var(--orange) 43% 59%,var(--cyan) 59% 77%,var(--green) 77% 100%);
+}
+
+header{
+  position:relative;
+  min-height:272px;
+  padding:42px 48px 30px;
+  display:grid;
+  grid-template-columns:minmax(0,1.3fr) minmax(360px,.7fr);
+  gap:30px;
+  align-items:center;
+  overflow:hidden;
+}
+
+header:after{
+  content:"";
+  position:absolute;
+  right:-70px;
+  top:-85px;
+  width:470px;
+  height:320px;
+  background:
+    radial-gradient(circle at 25% 34%,var(--cyan) 0 16%,transparent 17%),
+    radial-gradient(circle at 58% 22%,var(--orange) 0 13%,transparent 14%),
+    radial-gradient(circle at 83% 52%,var(--magenta) 0 17%,transparent 18%),
+    radial-gradient(circle at 46% 75%,var(--navy) 0 21%,transparent 22%);
+  opacity:.94;
+  pointer-events:none;
+}
+
+.header-copy{position:relative;z-index:2}
+.eyebrow{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  color:var(--teal);
+  font-weight:900;
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:.16em;
+}
+.eyebrow:before{
+  content:"";
+  width:52px;height:5px;border-radius:999px;
+  background:linear-gradient(90deg,var(--cyan),var(--orange),var(--red));
+}
+h1{
+  margin:11px 0 0;
+  font-size:clamp(48px,6vw,92px);
+  line-height:.90;
+  letter-spacing:-.055em;
+  color:var(--navy);
+  font-weight:950;
+}
+h1 span{color:var(--red)}
+.subtitle{
+  margin:17px 0 0;
+  color:var(--blue);
+  font-size:clamp(17px,2vw,24px);
+  font-weight:800;
+}
+.tagline{
+  margin:10px 0 0;
+  max-width:880px;
+  color:var(--muted);
+  font-size:15.5px;
+  line-height:1.52;
+}
+
+.team{
+  margin-top:18px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+.team-label{
+  display:inline-flex;
+  align-items:center;
+  padding:8px 11px;
+  border-radius:999px;
+  background:var(--navy);
+  color:white;
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  font-weight:900;
+}
+.student{
+  padding:8px 11px;
+  border-radius:999px;
+  border:1px solid #e0e6ef;
+  background:#fff;
+  color:var(--navy);
+  font-size:12px;
+  font-weight:800;
+  box-shadow:0 7px 16px rgba(7,26,76,.05);
+}
+
+.city{
+  position:relative;
+  z-index:2;
+  align-self:end;
+  display:flex;
+  justify-content:flex-end;
+}
+.city svg{width:100%;max-width:520px;height:auto;display:block}
+
+.canvas{
+  padding:0 30px 32px;
+  display:grid;
+  grid-template-columns:1.03fr 1.35fr 1.35fr 1.08fr;
+  grid-template-areas:
+    "problem tech tech community"
+    "actors flow flow flow"
+    "actors metric metric metric";
+  gap:18px;
+  position:relative;
+  z-index:2;
+}
+
+.panel{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:25px;
+  box-shadow:0 10px 28px rgba(7,26,76,.065);
+  overflow:hidden;
+}
+.panel .inner{padding:22px}
+.problem{grid-area:problem}
+.actors{grid-area:actors}
+.tech{grid-area:tech}
+.community{grid-area:community}
+.flow{grid-area:flow}
+.metric{grid-area:metric}
+
+.title{
+  display:flex;
+  align-items:center;
+  gap:11px;
+  margin:0 0 15px;
+  color:var(--navy);
+  font-size:18px;
+  font-weight:950;
+  letter-spacing:-.02em;
+}
+.num{
+  width:36px;height:36px;border-radius:12px;
+  display:grid;place-items:center;
+  color:white;font-weight:950;
+  flex:0 0 auto;
+}
+.n-red{background:linear-gradient(145deg,var(--red),var(--magenta))}
+.n-blue{background:linear-gradient(145deg,var(--navy),var(--blue))}
+.n-teal{background:linear-gradient(145deg,var(--teal),var(--cyan))}
+.n-green{background:linear-gradient(145deg,#0f6d47,var(--green))}
+
+.problem p{
+  margin:0;
+  color:#26324b;
+  line-height:1.58;
+  font-size:15px;
+}
+.note{
+  margin-top:15px;
+  padding:13px 14px;
+  border-radius:17px;
+  background:linear-gradient(135deg,rgba(179,18,60,.07),rgba(242,140,34,.08));
+  border:1px solid rgba(179,18,60,.10);
+  color:#535e73;
+  font-size:12.7px;
+  line-height:1.5;
+}
+.note strong{color:var(--red)}
+
+.actor-list{display:grid;gap:9px}
+.actor{
+  display:grid;
+  grid-template-columns:42px 1fr;
+  gap:10px;
+  align-items:start;
+  padding:11px;
+  border:1px solid #e4e9f2;
+  border-radius:17px;
+  background:linear-gradient(180deg,#fff,#fbfcfe);
+}
+.actor-icon{
+  width:42px;height:42px;border-radius:13px;
+  display:grid;place-items:center;
+  color:#fff;font-weight:950;font-size:15px;
+}
+.actor b{display:block;color:var(--navy);font-size:12.3px;line-height:1.23}
+.actor small{display:block;margin-top:3px;color:var(--muted);font-size:11.1px;line-height:1.35}
+.actor small strong{color:#303b54}
+.actor.unicap b{color:var(--red)}
+
+.tech-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+}
+.tech-card{
+  position:relative;
+  min-height:118px;
+  border:1px solid #e2e8f1;
+  border-radius:19px;
+  background:#fff;
+  padding:13px 13px 13px 17px;
+  overflow:hidden;
+}
+.tech-card:before{
+  content:"";
+  position:absolute;
+  left:0;top:0;bottom:0;width:5px;
+  background:var(--accent);
+}
+.tech-k{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:8px;
+  margin-bottom:13px;
+  color:var(--muted);
+  font-size:10px;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.09em;
+}
+.bubble{
+  width:28px;height:28px;border-radius:9px;
+  display:grid;place-items:center;
+  color:var(--accent);
+  background:color-mix(in srgb,var(--accent) 12%,white);
+  font-weight:950;
+}
+.tech-card h3{
+  margin:0;
+  color:var(--navy);
+  font-size:13.8px;
+  line-height:1.3;
+}
+
+.community{
+  background:linear-gradient(180deg,#fff 0%,#fbfefc 100%);
+}
+.timeline{
+  display:grid;
+  gap:15px;
+  position:relative;
+}
+.timeline:before{
+  content:"";
+  position:absolute;
+  left:17px;
+  top:15px;
+  bottom:15px;
+  width:2px;
+  background:rgba(42,139,77,.16);
+}
+.titem{
+  display:grid;
+  grid-template-columns:36px 1fr;
+  gap:11px;
+  position:relative;
+}
+.tnum{
+  width:36px;height:36px;border-radius:12px;
+  display:grid;place-items:center;
+  color:white;background:var(--green);
+  font-weight:950;z-index:2;
+}
+.titem b{display:block;color:var(--navy);font-size:12.8px;margin-bottom:3px}
+.titem span{display:block;color:var(--muted);font-size:11.7px;line-height:1.43}
+.quote{
+  margin-top:18px;
+  padding:16px 16px 16px 45px;
+  border-radius:17px;
+  background:rgba(42,139,77,.08);
+  color:#126d4a;
+  font-size:13.2px;
+  line-height:1.42;
+  font-weight:850;
+  position:relative;
+}
+.quote:before{
+  content:"“";
+  position:absolute;left:14px;top:0;
+  font:52px/1 Georgia,serif;
+  color:var(--teal);
+}
+
+.flow{
+  border:none;
+  color:white;
+  background:
+    radial-gradient(circle at 76% 55%,rgba(242,140,34,.28),transparent 150px),
+    radial-gradient(circle at 46% 20%,rgba(0,165,186,.17),transparent 170px),
+    linear-gradient(130deg,#061945 0%,#0a3270 62%,#08275b 100%);
+  position:relative;
+}
+.flow:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  opacity:.16;
+  background-image:
+    linear-gradient(rgba(255,255,255,.15) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.12) 1px,transparent 1px);
+  background-size:34px 34px;
+  pointer-events:none;
+}
+.flow .inner{position:relative;z-index:2;padding:24px}
+.flow .title{color:white;margin-bottom:6px}
+.flow-intro{
+  margin:0 0 22px;
+  color:rgba(255,255,255,.74);
+  font-size:12.5px;
+  line-height:1.45;
+}
+
+.flowline{
+  display:grid;
+  grid-template-columns:repeat(7,minmax(0,1fr));
+  gap:13px;
+  align-items:stretch;
+}
+.fstep{
+  min-width:0;
+  position:relative;
+  padding:14px 10px 13px;
+  border-radius:18px;
+  background:rgba(255,255,255,.085);
+  border:1px solid rgba(255,255,255,.17);
+  backdrop-filter:blur(4px);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+  gap:8px;
+}
+.fstep:not(:last-child):after{
+  content:"→";
+  position:absolute;
+  right:-14px;
+  top:50%;
+  transform:translate(50%,-50%);
+  z-index:5;
+  color:rgba(255,255,255,.92);
+  font-size:18px;
+  font-weight:950;
+  text-shadow:0 2px 8px rgba(0,0,0,.20);
+}
+.ficon{
+  width:58px;height:58px;border-radius:17px;
+  display:grid;place-items:center;
+  color:white;font-weight:950;font-size:17px;
+  background:var(--c);
+  border:2px solid rgba(255,255,255,.82);
+  box-shadow:0 8px 18px rgba(0,0,0,.16);
+}
+.fstep b{
+  color:white;
+  font-size:11.5px;
+  line-height:1.25;
+  min-height:30px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.fstep small{
+  color:rgba(255,255,255,.67);
+  font-size:9.8px;
+  line-height:1.3;
+}
+.feedback{
+  margin:17px auto 0;
+  width:88%;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  color:rgba(255,255,255,.72);
+  font-size:10.7px;
+  text-transform:uppercase;
+  letter-spacing:.10em;
+  font-weight:800;
+}
+.feedback:before,.feedback:after{
+  content:"";
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.58));
+  flex:1;
+}
+.feedback:after{background:linear-gradient(90deg,rgba(255,255,255,.58),transparent)}
+
+.metric-grid{
+  display:grid;
+  grid-template-columns:1.25fr 1.35fr .68fr;
+  gap:13px;
+  align-items:stretch;
+}
+.metric-main{
+  position:relative;
+  overflow:hidden;
+  padding:19px 20px;
+  border-radius:21px;
+  color:white;
+  background:linear-gradient(135deg,var(--red),var(--magenta) 58%,var(--orange));
+}
+.metric-main:after{
+  content:"";
+  position:absolute;right:-60px;bottom:-85px;
+  width:155px;height:155px;border-radius:50%;
+  border:24px solid rgba(255,255,255,.14);
+}
+.metric-main .label{
+  font-size:10.5px;
+  text-transform:uppercase;
+  letter-spacing:.11em;
+  font-weight:900;
+  opacity:.88;
+}
+.metric-main p{
+  margin:11px 0 0;
+  font-size:18px;
+  line-height:1.4;
+  font-weight:880;
+}
+.metrics{display:grid;gap:8px}
+.mitem{
+  display:grid;
+  grid-template-columns:28px 1fr;
+  gap:9px;
+  align-items:center;
+  border:1px solid #e3e8f1;
+  border-radius:14px;
+  padding:9px 10px;
+  background:white;
+  color:#3e4960;
+  font-size:11.5px;
+  line-height:1.35;
+}
+.mi{
+  width:28px;height:28px;border-radius:9px;
+  display:grid;place-items:center;
+  background:#eef3ff;color:var(--navy);
+  font-weight:950;
+}
+.target{
+  position:relative;
+  overflow:hidden;
+  min-height:100%;
+  padding:17px 13px;
+  border-radius:21px;
+  background:var(--navy);
+  color:white;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+}
+.target:before{
+  content:"";
+  position:absolute;inset:8px;
+  border:1px dashed rgba(242,140,34,.58);
+  border-radius:16px;
+}
+.target b{font-size:11.4px;line-height:1.3;position:relative}
+.target strong{font-size:34px;line-height:1;color:var(--orange);margin-top:7px;position:relative}
+
+footer{
+  padding:18px 48px 22px;
+  border-top:1px solid rgba(7,26,76,.07);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:18px;
+  color:#5c6679;
+  font-size:11.5px;
+}
+.foot-strong{font-weight:850;color:var(--navy)}
+.foot-team{text-align:center;line-height:1.4}
+.dots{display:flex;gap:6px}
+.dots i{width:9px;height:9px;border-radius:50%;display:block}
+
+@media (max-width:1220px){
+  header{grid-template-columns:1fr}
+  .city{
+    position:absolute;right:28px;top:35px;
+    width:43%;opacity:.18;
+  }
+  .canvas{
+    grid-template-columns:1fr 1fr;
+    grid-template-areas:
+      "problem actors"
+      "tech tech"
+      "community community"
+      "flow flow"
+      "metric metric";
+  }
+  .flowline{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .fstep:nth-child(4):after{display:none}
+  .fstep:nth-child(n+5){margin-top:2px}
+}
+
+@media (max-width:760px){
+  .page{width:calc(100% - 12px);margin:6px auto 18px;border-radius:24px}
+  header{padding:26px 22px 22px;min-height:auto}
+  .city{display:none}
+  .canvas{
+    padding:0 10px 15px;
+    grid-template-columns:1fr;
+    grid-template-areas:
+      "problem"
+      "actors"
+      "tech"
+      "community"
+      "flow"
+      "metric";
+  }
+  .tech-grid{grid-template-columns:1fr 1fr}
+  .flowline{grid-template-columns:1fr 1fr}
+  .fstep:after{display:none!important}
+  .metric-grid{grid-template-columns:1fr}
+  footer{padding:18px 22px;flex-direction:column;align-items:flex-start}
+  .foot-team{text-align:left}
+}
+
+@media (max-width:520px){
+  .tech-grid{grid-template-columns:1fr}
+  .flowline{grid-template-columns:1fr}
+}
+
+@media print{
+  @page{size:A3 landscape;margin:0}
+  body{background:white}
+  .page{width:100%;margin:0;border:none;border-radius:0;box-shadow:none}
+  .panel{box-shadow:none}
+}
+</style>
+</head>
+
+<body>
+<main class="page">
+  <div class="top-accent"></div>
+
+  <header>
+    <div class="header-copy">
+      <div class="eyebrow">Inovação Social Digital • Recife</div>
+      <h1>VIGIASAÚDE <span>RECIFE</span></h1>
+      <div class="subtitle">One-Page Canvas | Arquitetura de Inovação Social Digital</div>
+      <p class="tagline">Vigilância comunitária inteligente de vetores, pragas urbanas e animais peçonhentos, conectando moradores, agentes públicos, tecnologia e pesquisa aplicada.</p>
+
+      <div class="team" aria-label="Equipe">
+        <span class="team-label">Equipe</span>
+        <span class="student">Kristyson Alpino</span>
+        <span class="student">Pedro Victor Gomes</span>
+        <span class="student">Leandro Lima</span>
+      </div>
+    </div>
+
+    <div class="city" aria-hidden="true">
+      <svg viewBox="0 0 620 250">
+        <defs>
+          <linearGradient id="water" x1="0" x2="1">
+            <stop offset="0" stop-color="#00A5BA"/>
+            <stop offset=".52" stop-color="#0D4EA0"/>
+            <stop offset="1" stop-color="#071A4C"/>
+          </linearGradient>
+        </defs>
+        <path d="M0 216 C70 161 128 178 191 145 C260 109 319 169 382 137 C445 105 506 143 620 93 L620 250 L0 250Z" fill="url(#water)"/>
+        <path d="M17 214 Q108 86 203 214" fill="none" stroke="#0D4EA0" stroke-width="7"/>
+        <path d="M29 214 Q108 104 191 214" fill="none" stroke="#ffffff" stroke-width="2" opacity=".75"/>
+        <g fill="none" stroke="#0D4EA0" stroke-width="3">
+          <rect x="273" y="77" width="36" height="107"/>
+          <path d="M282 77V49h18v28"/>
+          <rect x="319" y="42" width="47" height="142"/>
+          <path d="M332 42V17h20v25"/>
+          <rect x="378" y="92" width="31" height="92"/>
+          <rect x="421" y="60" width="55" height="124"/>
+          <rect x="488" y="83" width="38" height="101"/>
+        </g>
+        <g stroke="#F28C22" stroke-width="3">
+          <path d="M319 82h47M319 108h47M319 134h47M319 160h47"/>
+          <path d="M421 91h55M421 119h55M421 147h55"/>
+        </g>
+        <circle cx="554" cy="46" r="31" fill="#F28C22"/>
+        <circle cx="598" cy="92" r="44" fill="#D81C4F" opacity=".92"/>
+      </svg>
+    </div>
+  </header>
+
+  <section class="canvas">
+
+    <article class="panel problem">
+      <div class="inner">
+        <h2 class="title"><span class="num n-red">1</span> PROBLEMA</h2>
+        <p>As informações sobre <strong>vetores, pragas urbanas e animais peçonhentos</strong> no Recife são dispersas e, muitas vezes, não se transformam rapidamente em inteligência territorial para prevenção, priorização e resposta da saúde pública.</p>
+        <div class="note"><strong>Exemplos:</strong> criadouros do <em>Aedes aegypti</em>, roedores, escorpiões, serpentes e infestações sanitárias.</div>
+      </div>
+    </article>
+
+    <article class="panel actors">
+      <div class="inner">
+        <h2 class="title"><span class="num n-blue">2</span> ATORES</h2>
+        <div class="actor-list">
+          <div class="actor">
+            <div class="actor-icon" style="background:var(--navy)">SA</div>
+            <div><b>Secretaria de Saúde / Vigilância de Zoonoses</b><small><strong>Portador da inovação</strong> — coordena protocolos, analisa riscos e orienta intervenções.</small></div>
+          </div>
+          <div class="actor">
+            <div class="actor-icon" style="background:var(--orange)">PR</div>
+            <div><b>Prefeitura do Recife</b><small><strong>Financiador</strong> — viabiliza recursos, operação e expansão.</small></div>
+          </div>
+          <div class="actor">
+            <div class="actor-icon" style="background:var(--cyan)">EM</div>
+            <div><b>EMPREL</b><small><strong>Parceiro tecnológico</strong> — desenvolve a plataforma, integra dados e garante infraestrutura.</small></div>
+          </div>
+          <div class="actor unicap">
+            <div class="actor-icon" style="background:linear-gradient(145deg,var(--red),var(--magenta))">UC</div>
+            <div><b>UNICAP</b><small><strong>Parceiro científico e de inovação</strong> — apoia IA, análise de dados, pesquisa aplicada e avaliação.</small></div>
+          </div>
+          <div class="actor">
+            <div class="actor-icon" style="background:var(--green)">CO</div>
+            <div><b>Comunidade e lideranças</b><small><strong>Preneurs</strong> — cocriam, registram ocorrências, validam problemas e acompanham resultados.</small></div>
+          </div>
+          <div class="actor">
+            <div class="actor-icon" style="background:var(--purple)">AG</div>
+            <div><b>Agentes de Saúde Ambiental e Endemias</b><small><strong>Preneurs institucionais</strong> — validam ocorrências em campo e registram intervenções.</small></div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="panel tech">
+      <div class="inner">
+        <h2 class="title"><span class="num n-teal">3</span> TECNOLOGIA PROPOSTA</h2>
+        <div class="tech-grid">
+          <div class="tech-card" style="--accent:var(--cyan)">
+            <div class="tech-k">Entrada <span class="bubble">01</span></div>
+            <h3>PWA Offline-First</h3>
+          </div>
+          <div class="tech-card" style="--accent:var(--orange)">
+            <div class="tech-k">Registro <span class="bubble">02</span></div>
+            <h3>Geolocalização + foto + formulário simples</h3>
+          </div>
+          <div class="tech-card" style="--accent:var(--blue)">
+            <div class="tech-k">Dados <span class="bubble">03</span></div>
+            <h3>Banco de dados georreferenciado</h3>
+          </div>
+          <div class="tech-card" style="--accent:var(--green)">
+            <div class="tech-k">Território <span class="bubble">04</span></div>
+            <h3>Mapa colaborativo de riscos</h3>
+          </div>
+          <div class="tech-card" style="--accent:var(--red)">
+            <div class="tech-k">Inteligência <span class="bubble">05</span></div>
+            <h3>IA de apoio à classificação e detecção de padrões territoriais</h3>
+          </div>
+          <div class="tech-card" style="--accent:var(--purple)">
+            <div class="tech-k">Gestão <span class="bubble">06</span></div>
+            <h3>Dashboard da Vigilância + ICRS</h3>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="panel community">
+      <div class="inner">
+        <h2 class="title"><span class="num n-green">4</span> PARTICIPAÇÃO DA COMUNIDADE</h2>
+        <div class="timeline">
+          <div class="titem">
+            <div class="tnum">1</div>
+            <div><b>Cocriação</b><span>Oficinas para definir categorias, linguagem e necessidades reais do território.</span></div>
+          </div>
+          <div class="titem">
+            <div class="tnum">2</div>
+            <div><b>Teste do protótipo</b><span>Moradores avaliam clareza, facilidade de uso e confiança na solução.</span></div>
+          </div>
+          <div class="titem">
+            <div class="tnum">3</div>
+            <div><b>Validação comunitária</b><span>Registros podem ser confirmados e contextualizados por outros moradores.</span></div>
+          </div>
+          <div class="titem">
+            <div class="tnum">4</div>
+            <div><b>Avaliação pós-intervenção</b><span>A comunidade informa se o problema continua ou foi resolvido.</span></div>
+          </div>
+        </div>
+        <div class="quote">A comunidade atua como sensor do território, sem substituir a validação técnica.</div>
+      </div>
+    </article>
+
+    <article class="panel flow">
+      <div class="inner">
+        <h2 class="title"><span class="num" style="background:rgba(255,255,255,.13)">↔</span> FLUXO DE INTELIGÊNCIA TERRITORIAL</h2>
+        <p class="flow-intro">A sequência abaixo foi reorganizada para leitura linear: o dado nasce na comunidade, ganha contexto e prioridade, gera ação de campo e retorna ao território como informação validada.</p>
+
+        <div class="flowline">
+          <div class="fstep">
+            <div class="ficon" style="--c:#06a8b5">01</div>
+            <b>Comunidade</b>
+            <small>identifica e relata</small>
+          </div>
+          <div class="fstep">
+            <div class="ficon" style="--c:#f28c22">02</div>
+            <b>PWA VigiaSaúde</b>
+            <small>foto, localização e contexto</small>
+          </div>
+          <div class="fstep">
+            <div class="ficon" style="--c:#2676ca">03</div>
+            <b>Backend + IA + Dados</b>
+            <small>organiza e detecta padrões</small>
+          </div>
+          <div class="fstep">
+            <div class="ficon" style="--c:#3b9d59">04</div>
+            <b>Dashboard da Vigilância</b>
+            <small>prioriza áreas e ocorrências</small>
+          </div>
+          <div class="fstep">
+            <div class="ficon" style="--c:#6d58a4">05</div>
+            <b>Agente de Campo</b>
+            <small>valida tecnicamente</small>
+          </div>
+          <div class="fstep">
+            <div class="ficon" style="--c:#ef4c2c">06</div>
+            <b>Intervenção</b>
+            <small>orienta, trata ou encaminha</small>
+          </div>
+          <div class="fstep">
+            <div class="ficon" style="--c:#129c96">07</div>
+            <b>Comunidade valida o resultado</b>
+            <small>confirma melhora ou recorrência</small>
+          </div>
+        </div>
+
+        <div class="feedback">ciclo contínuo de validação, aprendizagem e resposta</div>
+      </div>
+    </article>
+
+    <article class="panel metric">
+      <div class="inner">
+        <h2 class="title"><span class="num n-red">5</span> MÉTRICA DE IMPACTO SOCIAL</h2>
+        <div class="metric-grid">
+          <div class="metric-main">
+            <div class="label">Métrica principal</div>
+            <p>Redução do tempo médio entre o registro comunitário e a validação e o encaminhamento técnico.</p>
+          </div>
+
+          <div class="metrics">
+            <div class="mitem"><span class="mi">✓</span><span>% de ocorrências prioritárias tecnicamente validadas</span></div>
+            <div class="mitem"><span class="mi">→</span><span>% de ocorrências validadas com encaminhamento ou intervenção</span></div>
+            <div class="mitem"><span class="mi">↻</span><span>Redução da recorrência de relatos após a intervenção</span></div>
+            <div class="mitem"><span class="mi">●</span><span>Participação efetiva da comunidade no piloto</span></div>
+          </div>
+
+          <div class="target">
+            <b>Meta do piloto:<br>reduzir o tempo de resposta em pelo menos</b>
+            <strong>30%</strong>
+          </div>
+        </div>
+      </div>
+    </article>
+
+  </section>
+
+  <footer>
+    <div class="foot-strong">VigiaSaúde Recife • One-Page Canvas</div>
+    <div class="foot-team">Kristyson Alpino • Pedro Victor Gomes • Leandro Lima</div>
+    <div class="dots" aria-hidden="true">
+      <i style="background:var(--cyan)"></i>
+      <i style="background:var(--orange)"></i>
+      <i style="background:var(--red)"></i>
+      <i style="background:var(--purple)"></i>
+      <i style="background:var(--green)"></i>
+    </div>
+  </footer>
+</main>
+</body>
+</html>

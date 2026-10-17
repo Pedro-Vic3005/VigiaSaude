@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VigiaSaúde Recife • Etapa 02/06 • Entrega 1</title>
+<meta name="description" content="Diagrama e especificação de arquitetura técnica do piloto VigiaSaúde Recife.">
+<style>
+:root{--navy:#102D4D;--teal:#087D7A;--red:#A62546;--bg:#F6F4EE;--border:#DDE7E4;--ink:#172F43;--muted:#5E7180}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,Arial,Helvetica,sans-serif;line-height:1.5}
+.wrap{width:min(1320px,calc(100% - 34px));margin:22px auto 60px}
+.masthead{background:#FEFCF7;border:1px solid #E5E5DD;border-radius:30px 30px 0 0;position:relative;overflow:hidden;padding:36px 42px 27px}
+.masthead:after{content:'';position:absolute;border:24px solid rgba(8,125,122,.11);width:300px;height:300px;border-radius:50%;right:-96px;top:-183px}
+.eyebrow{font-size:13px;letter-spacing:.15em;text-transform:uppercase;color:var(--teal);font-weight:850}
+h1{font-size:clamp(36px,5.4vw,72px);letter-spacing:-.06em;line-height:1.03;margin:12px 0 9px;color:var(--navy);max-width:930px}
+h1 span{color:var(--red)}.lead{font-size:17px;color:#52657A;max-width:780px;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:10px}.chip{background:white;border:1px solid #DDE3E0;border-radius:100px;padding:8px 14px;font-size:12px;font-weight:800;color:#244359}
+.art{background:white;border:1px solid #E2EAE8;border-top:0;padding:20px 22px 26px}
+.art-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;padding:2px 14px 8px}
+h2{font-size:26px;letter-spacing:-.035em;color:var(--navy);margin:0}
+.art small{color:#677987}.graphic{overflow:auto;scrollbar-color:#A5C7C0 #F4F8F6;border-radius:20px}
+.graphic svg{display:block;width:100%;min-width:880px;height:auto}
+.strap{margin:10px 14px 0;color:#607589;font-size:13px}
+.content{background:#FBFCFA;border:1px solid #E2EAE8;border-top:0;border-radius:0 0 30px 30px;padding:34px 40px 40px}
+.thesis{background:#123A5E;color:white;padding:23px 26px;border-radius:21px;font-size:20px;font-weight:700;line-height:1.5;letter-spacing:-.01em;margin-bottom:30px}
+.thesis em{color:#B6E8D3;font-style:normal}
+.section{margin-top:30px}.section-kicker{color:var(--teal);font-size:12px;font-weight:850;letter-spacing:.12em;text-transform:uppercase;margin-bottom:9px}
+.section p{margin:9px 0;color:#3D5162;font-size:15px}
+table{width:100%;border-collapse:collapse;background:white;font-size:14px;border-radius:14px;overflow:hidden;border:1px solid var(--border)}
+th,td{padding:13px 15px;border-bottom:1px solid #E8ECE9;text-align:left;vertical-align:top}th{background:#EAF3F0;color:#0B5E61;font-size:12px;text-transform:uppercase;letter-spacing:.05em}tr:last-child td{border-bottom:0}td:first-child{font-weight:760;color:#183B58;width:25%}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}.note{border:1px solid var(--border);background:white;border-radius:17px;padding:18px 19px}.note h3{font-size:17px;margin:0 0 7px;color:#0E456B}.note p{margin:0;font-size:14px;line-height:1.55}
+.flow{display:grid;gap:10px}.step{display:grid;grid-template-columns:40px 1fr;gap:10px;align-items:start}.step .n{width:36px;height:36px;display:grid;place-items:center;color:#fff;background:var(--teal);border-radius:12px;font-weight:850}.step p{margin:4px 0}
+pre{white-space:pre-wrap;word-break:break-word;background:#142C44;color:#E7F5EE;padding:16px;border-radius:13px;font-size:13px}
+.fine{font-size:13px;color:#5E7180}.foot{display:flex;justify-content:space-between;gap:15px;align-items:center;margin-top:34px;padding-top:18px;border-top:1px solid var(--border);color:#5A6977;font-size:12px;flex-wrap:wrap}.foot strong{color:var(--navy)}
+@media(max-width:740px){table{display:block;overflow-x:auto;max-width:100%;} .masthead{padding:28px 23px}.art{padding:12px 6px 18px}.content{padding:24px 20px}.grid2{grid-template-columns:1fr}.thesis{font-size:17px;padding:19px}.art-head{padding:4px 14px}}
+@media print{@page{size:A4 landscape;margin:11mm}body{background:white}.wrap{width:100%;margin:0}.masthead,.art,.content{border-radius:0}.graphic{overflow:visible}.graphic svg{min-width:0}.section{break-inside:avoid}.note{break-inside:avoid}}
+</style></head><body>
+<div class="wrap">
+<header class="masthead">
+<div class="eyebrow">UNICAP / Tecnologias Digitais para Inovação Social · Etapa 02/06</div>
+<h1>VigiaSaúde Recife<span>.</span><br>Arquitetura do sistema</h1>
+<p class="lead">Entrega 1 — proposta de arquitetura lógica, responsabilidades de cada camada e justificativa técnica da stack para um piloto comunitário de seis meses.</p>
+<div class="meta"><span class="chip">Kristyson Alpino</span><span class="chip">Pedro Victor Gomes</span><span class="chip">Leandro Lima</span><span class="chip">Versão 1.0 · Proposta acadêmica</span></div>
+</header>
+<main>
+<section class="art" aria-labelledby="diagram-heading"><div class="art-head"><h2 id="diagram-heading">Uma arquitetura, três responsabilidades</h2><small>Fluxos de requisição, análise e persistência</small></div>
+<div class="graphic"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1540 1050" role="img" aria-labelledby="arch-title arch-desc">
+<title id="arch-title">Arquitetura lógica do VigiaSaúde Recife, versão de piloto</title>
+<desc id="arch-desc">Três camadas: interfaces do morador e agentes; API REST e serviços de negócio, segurança e inteligência opcional; persistência no PostgreSQL PostGIS, armazenamento privado de fotos e histórico de auditoria. O morador pode salvar localmente offline e sincronizar quando houver conexão.</desc>
+<defs>
+  <marker id="arrow" markerWidth="11" markerHeight="11" refX="9" refY="5.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L10 5.5 L1 10" fill="none" stroke="#315C78" stroke-width="1.7"/></marker>
+  <marker id="arrowgreen" markerWidth="11" markerHeight="11" refX="9" refY="5.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L10 5.5 L1 10" fill="none" stroke="#287C60" stroke-width="1.7"/></marker>
+</defs>
+<rect x="18" y="18" width="1504" height="1015" rx="30" fill="#FFFFFF" stroke="#E1E9EC" stroke-width="1"/>
+<rect x="45" y="60" width="1450" height="248" rx="23" fill="#EEF9F6" stroke="#CBE9DF" stroke-width="2"/>
+<rect x="45" y="372" width="1450" height="329" rx="23" fill="#EFF4FB" stroke="#CFDDF0" stroke-width="2"/>
+<rect x="45" y="759" width="1450" height="242" rx="23" fill="#F2F8F4" stroke="#D0E4D6" stroke-width="2"/>
+<rect x="74" y="81" width="46" height="46" rx="14" fill="#087D7A" stroke="none" stroke-width="1"/>
+<text x="97" y="112" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="800" text-anchor="middle" fill="white">01</text>
+<text x="136" y="111" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="800" text-anchor="start" fill="#087D7A" letter-spacing="1">FRONT-END  /  INTERFACES</text>
+<rect x="74" y="388" width="46" height="46" rx="14" fill="#154D89" stroke="none" stroke-width="1"/>
+<text x="97" y="419" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="800" text-anchor="middle" fill="white">02</text>
+<text x="136" y="418" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="800" text-anchor="start" fill="#154D89" letter-spacing="1">BACK-END  /  REGRAS E SERVIÇOS</text>
+<rect x="74" y="776" width="46" height="46" rx="14" fill="#277B51" stroke="none" stroke-width="1"/>
+<text x="97" y="807" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="800" text-anchor="middle" fill="white">03</text>
+<text x="136" y="806" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="800" text-anchor="start" fill="#277B51" letter-spacing="1">DADOS  /  PERSISTÊNCIA</text>
+<path d="M384 276 V324 H738 V455" fill="none" stroke="#0A8C91" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<path d="M1148 276 V343 H803 V455" fill="none" stroke="#15578C" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<path d="M770 543 V575" fill="none" stroke="#245778" stroke-width="3.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<path d="M559 625 H484" fill="none" stroke="#557EA4" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)" stroke-dasharray="8 7"/>
+<path d="M980 625 H1057" fill="none" stroke="#795A9F" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)" stroke-dasharray="8 7"/>
+<path d="M676 684 V739 H500 V846" fill="none" stroke="#287C60" stroke-width="3.0" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<path d="M767 684 V847" fill="none" stroke="#287C60" stroke-width="3.0" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<path d="M870 684 V741 H1213 V846" fill="none" stroke="#287C60" stroke-width="3.0" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<rect x="93" y="145" width="593" height="131" rx="18" fill="#FFFFFF" stroke="#DDE8E8" stroke-width="1.8"/>
+<rect x="93" y="145" width="7" height="131" rx="3" fill="#0A9C9F" stroke="none" stroke-width="1"/>
+<rect x="570" y="157" width="97" height="26" rx="13" fill="#F1F6F8" stroke="none" stroke-width="1"/>
+<text x="619" y="176" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="700" text-anchor="middle" fill="#0A9C9F">COMUNIDADE</text>
+<text x="117" y="187" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="800" text-anchor="start" fill="#0B274A">PWA DO MORADOR</text>
+<text x="117" y="223" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="500" text-anchor="start" fill="#526578">registro guiado, foto, GPS e acompanhamento</text>
+<text x="117" y="248" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="500" text-anchor="start" fill="#526578">modo offline: Service Worker + IndexedDB</text>
+<rect x="864" y="145" width="568" height="131" rx="18" fill="#FFFFFF" stroke="#DDE8E8" stroke-width="1.8"/>
+<rect x="864" y="145" width="7" height="131" rx="3" fill="#14588A" stroke="none" stroke-width="1"/>
+<rect x="1316" y="157" width="97" height="26" rx="13" fill="#F1F6F8" stroke="none" stroke-width="1"/>
+<text x="1365" y="176" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="700" text-anchor="middle" fill="#14588A">RESTRITO</text>
+<text x="888" y="187" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="800" text-anchor="start" fill="#0B274A">PAINEL DA VIGILÂNCIA</text>
+<text x="888" y="223" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="500" text-anchor="start" fill="#526578">mapa territorial, triagem, validações</text>
+<text x="888" y="248" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="500" text-anchor="start" fill="#526578">histórico, encaminhamentos e indicadores</text>
+<rect x="559" y="455" width="421" height="88" rx="18" fill="#FFFFFF" stroke="#DDE8E8" stroke-width="1.8"/>
+<rect x="559" y="455" width="7" height="88" rx="3" fill="#185D96" stroke="none" stroke-width="1"/>
+<text x="583" y="497" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="800" text-anchor="start" fill="#0B274A">API REST / HTTPS</text>
+<text x="583" y="533" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="500" text-anchor="start" fill="#526578">recebe e valida requisições</text>
+<text x="583" y="558" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="500" text-anchor="start" fill="#526578"></text>
+<rect x="559" y="575" width="421" height="109" rx="18" fill="#FFFFFF" stroke="#DDE8E8" stroke-width="1.8"/>
+<rect x="559" y="575" width="7" height="109" rx="3" fill="#185D96" stroke="none" stroke-width="1"/>
+<text x="583" y="617" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="800" text-anchor="start" fill="#0B274A">NÚCLEO DE OCORRÊNCIAS</text>
+<text x="583" y="653" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="500" text-anchor="start" fill="#526578">regras, status e priorização</text>
+<text x="583" y="678" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="500" text-anchor="start" fill="#526578">fluxo de vistoria + retorno ao morador</text>
+<rect x="116" y="566" width="368" height="121" rx="18" fill="#FFFFFF" stroke="#DDE8E8" stroke-width="1.8"/>
+<rect x="116" y="566" width="7" height="121" rx="3" fill="#5981B7" stroke="none" stroke-width="1"/>
+<text x="140" y="608" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="800" text-anchor="start" fill="#0B274A">ACESSO E PROTEÇÃO</text>
+<text x="140" y="644" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="500" text-anchor="start" fill="#526578">perfis e autorização de agentes</text>
+<text x="140" y="669" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="500" text-anchor="start" fill="#526578">controle de abuso e moderação</text>
+<rect x="1057" y="566" width="359" height="121" rx="18" fill="#FFFFFF" stroke="#DDE8E8" stroke-width="1.8"/>
+<rect x="1057" y="566" width="7" height="121" rx="3" fill="#8962B0" stroke="none" stroke-width="1"/>
+<text x="1081" y="608" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="800" text-anchor="start" fill="#0B274A">ANÁLISE ASSISTIDA*</text>
+<text x="1081" y="644" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="500" text-anchor="start" fill="#526578">agrupamento geográfico/temporal</text>
+<text x="1081" y="669" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="500" text-anchor="start" fill="#526578">IA para sugestão, sem diagnóstico</text>
+<rect x="86" y="846" width="454" height="126" rx="18" fill="#FFFFFF" stroke="#DDE8E8" stroke-width="1.8"/>
+<rect x="86" y="846" width="7" height="126" rx="3" fill="#238258" stroke="none" stroke-width="1"/>
+<text x="110" y="888" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="800" text-anchor="start" fill="#0B274A">POSTGRESQL + POSTGIS</text>
+<text x="110" y="924" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="500" text-anchor="start" fill="#526578">ocorrências, categorias e usuários</text>
+<text x="110" y="949" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="500" text-anchor="start" fill="#526578">pontos, filtros e consultas espaciais</text>
+<rect x="557" y="846" width="424" height="126" rx="18" fill="#FFFFFF" stroke="#DDE8E8" stroke-width="1.8"/>
+<rect x="557" y="846" width="7" height="126" rx="3" fill="#238258" stroke="none" stroke-width="1"/>
+<text x="581" y="888" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="800" text-anchor="start" fill="#0B274A">ARQUIVOS PRIVADOS</text>
+<text x="581" y="924" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="500" text-anchor="start" fill="#526578">fotos e evidências da ocorrência</text>
+<text x="581" y="949" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="500" text-anchor="start" fill="#526578">BD guarda referências e metadados</text>
+<rect x="1000" y="846" width="454" height="126" rx="18" fill="#FFFFFF" stroke="#DDE8E8" stroke-width="1.8"/>
+<rect x="1000" y="846" width="7" height="126" rx="3" fill="#238258" stroke="none" stroke-width="1"/>
+<text x="1024" y="888" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="800" text-anchor="start" fill="#0B274A">AUDITORIA E INDICADORES</text>
+<text x="1024" y="924" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="500" text-anchor="start" fill="#526578">validações, ações e eventos</text>
+<text x="1024" y="949" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="500" text-anchor="start" fill="#526578">linha do tempo e métricas do piloto</text>
+</svg></div><p class="strap">* A análise assistida não confirma espécies ou riscos sanitários: é uma sugestão sujeita à validação humana. As integrações com sistemas municipais são possibilidades futuras, não conexões já existentes.</p></section>
+<section class="content">
+<div class="thesis">Escolha arquitetural: <em>monólito modular com API REST</em>. Um back-end único, dividido internamente por responsabilidades, atende melhor ao piloto do que uma estrutura de microsserviços, pois reduz infraestrutura, custos e pontos de falha.</div>
+<section class="section"><div class="section-kicker">01 / Responsabilidades</div><h2>O que cada camada faz — e o que não faz</h2>
+<table><thead><tr><th>Camada</th><th>Responsabilidade principal</th><th>Limite</th></tr></thead><tbody>
+<tr><td>Front-end comunitário</td><td>PWA responsiva; formulário de ocorrência com foto e localização; salvamento local offline; acompanhamento de protocolo.</td><td>Não calcula prioridade sanitária definitiva nem acessa diretamente o banco central.</td></tr>
+<tr><td>Front-end da Vigilância</td><td>Painel restrito; filtros por bairro/data/status; mapa territorial; triagem, validação e registros de intervenção.</td><td>Não expõe coordenadas residenciais no mapa público.</td></tr>
+<tr><td>Back-end/API</td><td>Receber e validar dados; garantir regras de negócio; gerenciar ocorrências, status, acesso e histórico; fornecer JSON.</td><td>Centraliza permissões: a interface não define sozinha quem pode validar casos.</td></tr>
+<tr><td>Dados</td><td>Persistir usuários, ocorrências, geometrias e trilha de eventos no PostgreSQL/PostGIS; guardar fotos em armazenamento privado.</td><td>Imagens ficam fora das colunas do banco; apenas URLs internas e metadados são referenciados.</td></tr>
+<tr><td>Inteligência assistida</td><td>Detectar agrupamentos espacial-temporais; opcionalmente sugerir categoria de imagem com sinalização de incerteza.</td><td>Não diagnostica doenças, não confirma espécie e não toma decisões operacionais sozinho.</td></tr>
+</tbody></table></section>
+<section class="section"><div class="section-kicker">02 / Decisões de engenharia</div><h2>Stack recomendada e justificativa</h2>
+<table><thead><tr><th>Escolha</th><th>Por quê</th></tr></thead><tbody>
+<tr><td>React + TypeScript + Vite</td><td>Reuso de componentes acessíveis entre portal e painel; tipagem diminui erros de integração; build otimizado para navegador.</td></tr>
+<tr><td>PWA + Service Worker + IndexedDB</td><td>Instalação opcional, menor barreira de acesso e fila local de relatos/fotos quando a rede falhar. Sincronização quando o aplicativo estiver novamente aberto/conectado.</td></tr>
+<tr><td>Node.js + TypeScript + Express</td><td>API REST enxuta, mesma linguagem do front-end e maturidade de bibliotecas. Organização por módulos: ocorrências, anexos, acesso e fiscalização.</td></tr>
+<tr><td>PostgreSQL + PostGIS</td><td>Integridade relacional, consultas por proximidade/bairro e funções de geometria, necessárias para agrupar relatos no território.</td></tr>
+<tr><td>Armazenamento de objetos privado (S3 compatível)</td><td>Melhor para fotos do que guardar binários no banco; permite limites de tamanho, regras de retenção e acesso temporário autorizado.</td></tr>
+<tr><td>Python (módulo futuro de IA)</td><td>Ecossistema consolidado para classificação experimental e análise espacial; serviço opcional, sem dependência para registrar ou consultar relatos.</td></tr>
+</tbody></table></section>
+<section class="section"><div class="section-kicker">03 / Jornadas</div><h2>Como os dados circulam</h2>
+<div class="grid2">
+<div class="note"><h3>Morador, inclusive com internet instável</h3><div class="flow">
+<div class="step"><div class="n">1</div><p>Preenche categoria, foto, localização e breve descrição, com linguagem simples.</p></div>
+<div class="step"><div class="n">2</div><p>O registro recebe um identificador local e permanece em IndexedDB enquanto estiver pendente.</p></div>
+<div class="step"><div class="n">3</div><p>Quando a conexão retornar, o app envia os dados pela API; o servidor evita duplicações usando chave de idempotência.</p></div>
+<div class="step"><div class="n">4</div><p>O cidadão recebe protocolo e pode acompanhar atualizações, sem ver dados privados de terceiros.</p></div>
+</div></div>
+<div class="note"><h3>Agente da Vigilância</h3><div class="flow">
+<div class="step"><div class="n">1</div><p>Entra em área restrita com autenticação e permissões apropriadas.</p></div>
+<div class="step"><div class="n">2</div><p>Consulta pendências, agrupamentos e ocorrências por área, sem tratar voto comunitário como confirmação técnica.</p></div>
+<div class="step"><div class="n">3</div><p>Registra validação, inspeção, orientação ou intervenção, com histórico auditável.</p></div>
+<div class="step"><div class="n">4</div><p>O cidadão recebe retorno e pode comunicar recorrência, reabrindo o ciclo.</p></div>
+</div></div></div></section>
+<section class="section"><div class="section-kicker">04 / Privacidade, acessibilidade e desempenho</div><h2>Critérios de arquitetura desde o início</h2>
+<div class="grid2">
+<div class="note"><h3>Proteção e governança</h3><p>HTTPS obrigatório; validação de campos no servidor; papéis de morador/agente/gestor; limitação de requisições; tratamento de imagens; trilha de auditoria; retenção e base legal definidas antes do piloto. Dados públicos apenas de forma agregada por território.</p></div>
+<div class="note"><h3>Acesso comunitário</h3><p>Fluxo curto, botões amplos, contraste adequado, descrições textuais, alternativa manual ao GPS, feedback de envio pendente/concluído, navegação por teclado e interface utilizável sem depender de IA ou rede contínua.</p></div>
+</div></section>
+<section class="section"><div class="section-kicker">05 / Limites desta entrega</div><h2>O que está definido nesta fase</h2><p>Esta é a <strong>arquitetura proposta</strong>, não um software implantado. A Etapa 02 ainda exigirá, nas próximas entregas, (a) modelo entidade-relacionamento e dicionário de dados; (b) contratos REST detalhados; e (c) protótipo funcional de alta fidelidade. Nomes de instituições como Prefeitura, EMPREL e UNICAP indicam <strong>papéis previstos na proposta</strong>, não parcerias formalizadas.</p></section>
+<div class="foot"><strong>VigiaSaúde Recife · Entrega 1 — Arquitetura</strong><span>Kristyson Alpino · Pedro Victor Gomes · Leandro Lima</span></div>
+</section></main></div></body></html>
